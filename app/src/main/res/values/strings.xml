@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">HumanAIProject</string>
+
+    <!--  Upload  -->
+    <string name="upload_label">Upload</string>
+    <!--  Avatars  -->
+    <string name="avatars_label">Avatars</string>
+    <!--  My Videos -->
+    <string name="videos_label">My Videos</string>
+    <!--  Settings  -->
+    <string name="settings_label">Settings</string>
 </resources>

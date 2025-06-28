@@ -16,8 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import me.yeahapps.myhumanai.core.ui.component.RequestInAppReview
 import me.yeahapps.myhumanai.core.ui.theme.HumanAITheme
-import me.yeahapps.myhumanai.features.onboarding.ui.OnboardingScreen
-import me.yeahapps.myhumanai.features.root.ui.RootScreen
+import me.yeahapps.myhumanai.features.root.ui.screen.RootScreen
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -38,7 +37,7 @@ class MainActivity : ComponentActivity() {
             HumanAITheme {
                 HumanAIApp(
                     navController,
-                    startDestination = if (isFirstLaunch) OnboardingScreen else RootScreen,
+                    startDestination = RootScreen,//if (isFirstLaunch) OnboardingScreen else RootScreen,
                 )
                 var showDialog by remember { mutableStateOf(true) }
                 if (!isFirstLaunch) {

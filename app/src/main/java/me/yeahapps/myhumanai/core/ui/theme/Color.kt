@@ -24,6 +24,10 @@ data class HumanAIColors(
 
     val iconButtonPrimary: Color = Color.Unspecified,
     val iconButtonOnPrimary: Color = Color.Unspecified,
+
+    val bottomNavBarContainer: Color = Color.Unspecified,
+    val bottomNavBarContent: Color = Color.Unspecified,
+    val bottomNavBarContentSelected: Color = Color.Unspecified,
 ) {
 
     companion object {
@@ -45,6 +49,10 @@ data class HumanAIColors(
 
             iconButtonPrimary = Color(0xFFFFFFFF),
             iconButtonOnPrimary = Color(0xFFFDE16C),
+
+            bottomNavBarContainer = Color(0xFF020228),
+            bottomNavBarContent = Color(0xFF7E7E7E),
+            bottomNavBarContentSelected = Color(0xFFFFE26C),
         )
     }
 }
