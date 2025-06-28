@@ -2,25 +2,37 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.devtools.ksp)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.crashlytics)
 }
 
 android {
     namespace = "me.yeahapps.myhumanai"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "me.yeahapps.myhumanai"
         minSdk = 28
-        targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        targetSdk = 36
+        val majorVersion = 0
+        val minorVersion = 0
+        val patchVersion = 1
+
+        versionCode = majorVersion * 10000 + minorVersion * 100 + patchVersion
+        versionName = "${majorVersion}.${minorVersion}.${patchVersion}"
+        base.archivesName = "HumanAI-$versionName"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isDebuggable = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
@@ -33,6 +45,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -42,10 +55,32 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.bundles.androidx.ui)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.navigation)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.timber)
+
+    ksp(libs.hilt.compiler)
+    implementation(libs.browser)
+    implementation(libs.hilt.android)
+    implementation(libs.hilt.compose)
+    implementation(libs.bundles.okhttp)
+    implementation(libs.bundles.retrofit)
+    implementation(libs.haze)
+    implementation(libs.coil)
+
+    ksp(libs.room.compiler)
+    implementation(libs.bundles.room)
+
+    implementation(libs.bundles.media3)
+    implementation(libs.media)
+
+    implementation(libs.review)
+    implementation(libs.billing)
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.bundles.firebase)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
