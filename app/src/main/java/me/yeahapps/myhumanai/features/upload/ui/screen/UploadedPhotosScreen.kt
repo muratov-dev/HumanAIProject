@@ -8,26 +8,46 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import kotlinx.serialization.Serializable
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.yeahapps.myhumanai.R
 import me.yeahapps.myhumanai.core.ui.component.button.filled.HumanAIPrimaryButton
 import me.yeahapps.myhumanai.core.ui.component.topbar.HumanAIPrimaryTopBar
-import me.yeahapps.myhumanai.features.upload.ui.component.cards.UploadPhotoCard
-
-@Serializable
-object UploadScreen
+import me.yeahapps.myhumanai.core.ui.utils.collectFlowWithLifecycle
+import me.yeahapps.myhumanai.features.upload.ui.action.UploadedPhotosAction
+import me.yeahapps.myhumanai.features.upload.ui.component.cards.UploadedPhotoCard
+import me.yeahapps.myhumanai.features.upload.ui.event.UploadedPhotosEvent
+import me.yeahapps.myhumanai.features.upload.ui.state.UploadedPhotosState
+import me.yeahapps.myhumanai.features.upload.ui.viewmodel.UploadedPhotosViewModel
 
 @Composable
-fun UploadContainer(modifier: Modifier = Modifier) {
-    UploadContent(modifier = modifier)
+fun UploadedPhotosContainer(
+    modifier: Modifier = Modifier, viewModel: UploadedPhotosViewModel = hiltViewModel(), navigateToUpload: () -> Unit
+) {
+    val state by viewModel.viewState.collectAsStateWithLifecycle()
+    viewModel.viewActions.collectFlowWithLifecycle { action ->
+        when (action) {
+            is UploadedPhotosAction.NavigateToPhotoUpload -> navigateToUpload()
+            null -> {}
+        }
+    }
+
+    UploadedPhotosContent(
+        modifier = modifier, state = state, onEvent = remember { { event -> viewModel.obtainEvent(event) } })
 }
 
 @Composable
-private fun UploadContent(modifier: Modifier = Modifier) {
+private fun UploadedPhotosContent(
+    modifier: Modifier = Modifier,
+    state: UploadedPhotosState = UploadedPhotosState(),
+    onEvent: (UploadedPhotosEvent) -> Unit = {}
+) {
     Scaffold(modifier = modifier, topBar = {
         HumanAIPrimaryTopBar(title = stringResource(R.string.upload_headline))
     }) { innerPadding ->
@@ -42,7 +62,7 @@ private fun UploadContent(modifier: Modifier = Modifier) {
                     .padding(vertical = 16.dp)
             ) {
                 item {
-                    UploadPhotoCard { }
+                    UploadedPhotoCard { onEvent(UploadedPhotosEvent.NavigateToPhotoUpload) }
                 }
             }
             HumanAIPrimaryButton(

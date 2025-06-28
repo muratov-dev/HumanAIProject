@@ -1,10 +1,15 @@
 <resources>
+    <!--  Common  -->
     <string name="app_name">HumanAIProject</string>
+    <string name="common_or">or</string>
 
     <!--  Upload  -->
     <string name="upload_label">Upload</string>
     <string name="upload_headline">📷 Upload Photo</string>
+    <string name="upload_headline_second">Upload Your Photo</string>
     <string name="upload_main_button">Upload Photo</string>
+    <string name="upload_take_photo_button">📸 Take a new Photo</string>
+    <string name="upload_gallery_button">🐭 Choose from Gallery</string>
     <!--  Avatars  -->
     <string name="avatars_label">Avatars</string>
     <!--  My Videos -->

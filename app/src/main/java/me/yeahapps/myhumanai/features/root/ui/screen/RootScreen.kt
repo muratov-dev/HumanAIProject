@@ -12,13 +12,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kotlinx.serialization.Serializable
+import me.yeahapps.myhumanai.core.ui.navigation.commonModifier
 import me.yeahapps.myhumanai.features.avatars.AvatarsContainer
 import me.yeahapps.myhumanai.features.root.domain.BottomNavigationItem
 import me.yeahapps.myhumanai.features.root.ui.component.HumanAIBottomNavigation
 import me.yeahapps.myhumanai.features.settings.SettingsContainer
-import me.yeahapps.myhumanai.features.upload.ui.screen.UploadContainer
+import me.yeahapps.myhumanai.features.upload.ui.screen.UploadPhotoScreen
+import me.yeahapps.myhumanai.features.upload.ui.screen.UploadedPhotosContainer
 import me.yeahapps.myhumanai.features.videos.VideosContainer
-import me.yeahapps.myhumanai.core.ui.navigation.commonModifier
 
 @Serializable
 object RootScreen
@@ -53,11 +54,11 @@ private fun RootContent(modifier: Modifier = Modifier, parentNavController: NavH
             navController, startDestination = BottomNavigationItem.Upload.route, modifier = Modifier.fillMaxSize()
         ) {
             composable(BottomNavigationItem.Upload.route) {
-                UploadContainer(
+                UploadedPhotosContainer(
                     modifier = Modifier
                         .commonModifier()
-                        .padding(bottom = innerPadding.calculateBottomPadding())
-                )
+                        .padding(bottom = innerPadding.calculateBottomPadding()),
+                    navigateToUpload = { parentNavController.navigate(UploadPhotoScreen) })
             }
             composable(BottomNavigationItem.Avatars.route) {
                 AvatarsContainer(

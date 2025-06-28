@@ -36,14 +36,10 @@ fun HumanAIPrimaryButton(
             .background(color = colors.containerColor(enabled), shape = shape)
             .clip(shape)
             .defaultMinSize(minHeight = minHeight)
+            .clickable(enabled = enabled, onClick = onClick, role = Role.Button)
             .padding(paddingValues),
         contentAlignment = Alignment.Center
     ) {
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .clickable(enabled = enabled, onClick = onClick, role = Role.Button)
-        )
         CompositionLocalProvider(LocalContentColor provides colors.contentColor(enabled)) {
             HumanAIButtonText(text = centerContent)
         }

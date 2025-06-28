@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.Color
 @Immutable
 data class HumanAIColors(
     val backgroundPrimary: Color = Color.Unspecified,
+    val backgroundSecondary: Color = Color.Unspecified,
 
     val textPrimary: Color = Color.Unspecified,
     val textAccent: Color = Color.Unspecified,
@@ -16,7 +17,6 @@ data class HumanAIColors(
     val buttonPrimaryDisabled: Color = Color.Unspecified,
 
     val buttonPrimaryDefault: Color = Color.Unspecified,
-    val buttonSecondaryDefault: Color = Color.Unspecified,
     val buttonTertiaryDefault: Color = Color.Unspecified,
 
     val buttonTextPrimary: Color = Color.Unspecified,
@@ -34,6 +34,7 @@ data class HumanAIColors(
         @Stable
         val Dark = HumanAIColors(
             backgroundPrimary = Color(0xFF03032A),
+            backgroundSecondary = Color(0xFF1C1C3F),
 
             textPrimary = Color(0xFFFFFFFF),
             textAccent = Color(0xFFFDE16C),
@@ -41,7 +42,6 @@ data class HumanAIColors(
             buttonPrimaryDisabled = Color(0x80FDE16C),
 
             buttonPrimaryDefault = Color(0xFFFDE16C),
-            buttonSecondaryDefault = Color(0xFF1C1C3F),
             buttonTertiaryDefault = Color(0x1AFFFFFF),
 
             buttonTextPrimary = Color(0xFF000000),
