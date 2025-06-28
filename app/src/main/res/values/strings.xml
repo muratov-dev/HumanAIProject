@@ -3,6 +3,8 @@
 
     <!--  Upload  -->
     <string name="upload_label">Upload</string>
+    <string name="upload_headline">📷 Upload Photo</string>
+    <string name="upload_main_button">Upload Photo</string>
     <!--  Avatars  -->
     <string name="avatars_label">Avatars</string>
     <!--  My Videos -->

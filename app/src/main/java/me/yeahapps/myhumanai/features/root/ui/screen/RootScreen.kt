@@ -16,7 +16,7 @@ import me.yeahapps.myhumanai.features.avatars.AvatarsContainer
 import me.yeahapps.myhumanai.features.root.domain.BottomNavigationItem
 import me.yeahapps.myhumanai.features.root.ui.component.HumanAIBottomNavigation
 import me.yeahapps.myhumanai.features.settings.SettingsContainer
-import me.yeahapps.myhumanai.features.upload.UploadContainer
+import me.yeahapps.myhumanai.features.upload.ui.screen.UploadContainer
 import me.yeahapps.myhumanai.features.videos.VideosContainer
 import me.yeahapps.myhumanai.core.ui.navigation.commonModifier
 
