@@ -10,11 +10,11 @@ plugins {
 }
 
 android {
-    namespace = "me.yeahapps.myhumanai"
+    namespace = "me.yeahapps.talkingphoto"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "me.yeahapps.myhumanai"
+        applicationId = "me.yeahapps.talkingphoto"
         minSdk = 28
         targetSdk = 36
         val majorVersion = 0
