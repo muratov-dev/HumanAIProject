@@ -23,7 +23,8 @@ fun HumanAINavHost(
             UploadPhotoContainer(
                 modifier = Modifier
                     .commonModifier()
-                    .systemBarsPadding()
+                    .systemBarsPadding(),
+                navigateToCrop = {}
             )
         }
     }

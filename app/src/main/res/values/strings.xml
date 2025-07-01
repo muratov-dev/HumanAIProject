@@ -1,6 +1,7 @@
 <resources>
     <!--  Common  -->
     <string name="app_name">HumanAIProject</string>
+    <string name="common_done">Done</string>
     <string name="common_or">or</string>
 
     <!--  Upload  -->
@@ -12,6 +13,10 @@
     <string name="upload_bad_title">Avoid photos of these type 😓</string>
     <string name="upload_take_photo_button">📸 Take a new Photo</string>
     <string name="upload_gallery_button">🐭 Choose from Gallery</string>
+
+    <!--  Crop  -->
+    <string name="crop_title">Crop</string>
+
     <!--  Avatars  -->
     <string name="avatars_label">Avatars</string>
     <!--  My Videos -->

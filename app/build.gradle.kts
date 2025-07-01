@@ -69,6 +69,7 @@ dependencies {
     implementation(libs.bundles.retrofit)
     implementation(libs.haze)
     implementation(libs.coil)
+    implementation(libs.krop)
 
     ksp(libs.room.compiler)
     implementation(libs.bundles.room)

@@ -25,6 +25,7 @@ browser = "1.8.0"
 
 haze = "1.6.5"
 coil = "2.7.0"
+krop = "0.2.0"
 billing = "7.1.1"
 
 room = "2.7.2"
@@ -70,6 +71,7 @@ hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hil
 
 haze = { module = "dev.chrisbanes.haze:haze", version.ref = "haze" }
 coil = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
+krop = { module = "com.attafitamim.krop:ui", version.ref = "krop" }
 billing = { module = "com.android.billingclient:billing", version.ref = "billing" }
 
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
