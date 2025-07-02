@@ -3,8 +3,10 @@ package me.yeahapps.talkingphoto.core.ui.component.topbar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,7 +32,7 @@ fun HumanAISecondaryTopBar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally)
     ) {
-        navigationIcon?.let { navigationIcon() } ?: HumanAIIconButtonDefaults.IconSize
+        navigationIcon?.let { navigationIcon() } ?: Spacer(Modifier.size(HumanAIIconButtonDefaults.IconSize))
         Text(
             text = title,
             style = HumanAITheme.typography.headlineExtraBold,
@@ -38,6 +40,6 @@ fun HumanAISecondaryTopBar(
             textAlign = TextAlign.Center,
             modifier = Modifier.weight(1f)
         )
-        actions?.let { actions() } ?: HumanAIIconButtonDefaults.IconSize
+        actions?.let { actions() } ?: Spacer(Modifier.size(HumanAIIconButtonDefaults.IconSize))
     }
 }

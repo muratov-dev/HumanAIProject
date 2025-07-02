@@ -16,6 +16,11 @@
 
     <!--  Crop  -->
     <string name="crop_title">Crop</string>
+    <!--  Add Sound  -->
+    <string name="add_sound_title">Add Sound</string>
+    <string name="add_sound_permission_denied">
+        Microphone access not granted.\nPlease enable it in your device settings.
+    </string>
 
     <!--  Avatars  -->
     <string name="avatars_label">Avatars</string>

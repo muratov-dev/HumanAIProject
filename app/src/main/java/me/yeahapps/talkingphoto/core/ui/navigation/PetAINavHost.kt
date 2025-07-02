@@ -6,6 +6,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import me.yeahapps.talkingphoto.features.generating.ui.screen.AddSoundContainer
+import me.yeahapps.talkingphoto.features.generating.ui.screen.AddSoundScreen
 import me.yeahapps.talkingphoto.features.root.ui.screen.RootContainer
 import me.yeahapps.talkingphoto.features.root.ui.screen.RootScreen
 import me.yeahapps.talkingphoto.features.upload.ui.screen.UploadPhotoContainer
@@ -24,8 +26,13 @@ fun HumanAINavHost(
                 modifier = Modifier
                     .commonModifier()
                     .systemBarsPadding(),
-                navigateToCrop = {}
-            )
+                navigateToAddSound = { navController.navigate(AddSoundScreen(it.toString())) })
+        }
+        composable<AddSoundScreen> {
+            AddSoundContainer(
+                modifier = Modifier
+                    .commonModifier()
+                    .systemBarsPadding(), navigateBack = {})
         }
     }
 }

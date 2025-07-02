@@ -72,12 +72,12 @@ import timber.log.Timber
 object UploadPhotoScreen
 
 @Composable
-fun UploadPhotoContainer(modifier: Modifier = Modifier, navigateToCrop: (Uri) -> Unit) {
-    UploadPhotoContent(modifier = modifier, navigateToCrop = navigateToCrop)
+fun UploadPhotoContainer(modifier: Modifier = Modifier, navigateToAddSound: (Uri) -> Unit) {
+    UploadPhotoContent(modifier = modifier, navigateToAddSound = navigateToAddSound)
 }
 
 @Composable
-private fun UploadPhotoContent(modifier: Modifier = Modifier, navigateToCrop: (Uri) -> Unit) {
+private fun UploadPhotoContent(modifier: Modifier = Modifier, navigateToAddSound: (Uri) -> Unit) {
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -100,13 +100,13 @@ private fun UploadPhotoContent(modifier: Modifier = Modifier, navigateToCrop: (U
     val photoDonts = listOf("Not facing the camera", "Many people")
 
     val imagePicker = rememberPickPhotoLauncher(imageCropper = imageCropper, onSuccess = {
-        navigateToCrop(it)
+        navigateToAddSound(it)
         Timber.d(it.toString())
     }, onError = { Toast.makeText(context, "Error during image processing", Toast.LENGTH_SHORT).show() })
 
     val takePhoto =
         rememberTakePhotoLauncher(imageCropper = imageCropper, imageUriProvider = { tempImage?.uri }, onSuccess = {
-            navigateToCrop(it)
+            navigateToAddSound(it)
             Timber.d(it.toString())
         }, onError = {
             Toast.makeText(context, "Error during image processing", Toast.LENGTH_SHORT).show()
