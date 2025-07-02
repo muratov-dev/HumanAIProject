@@ -6,6 +6,7 @@ data class AddSoundState(
     val isRecording: Boolean = false,
     val isPlaying: Boolean = false,
     val audioDuration: Long = 0L,
+    val userMessage: String = "",
     val userImageUri: Uri? = null,
     val userAudioUri: Uri? = null,
 )

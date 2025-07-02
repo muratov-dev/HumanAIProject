@@ -2,6 +2,7 @@
     <!--  Common  -->
     <string name="app_name">HumanAIProject</string>
     <string name="common_done">Done</string>
+    <string name="common_next">Next</string>
     <string name="common_or">or</string>
 
     <!--  Upload  -->

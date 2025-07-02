@@ -2,6 +2,9 @@ package me.yeahapps.talkingphoto.features.generating.ui.event
 
 sealed interface AddSoundEvent {
 
+    data class OnMessageChanged(val message: String) : AddSoundEvent
+    data object ClearMessageField: AddSoundEvent
+
     data object StartRecording: AddSoundEvent
     data object StopRecording: AddSoundEvent
     data object PlaySound: AddSoundEvent

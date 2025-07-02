@@ -39,11 +39,18 @@ class AddSoundViewModel @Inject constructor(
             AddSoundEvent.StopRecording -> stopRecording()
             AddSoundEvent.StartGenerating -> {}
             AddSoundEvent.NavigateUp -> cancelRecordingAndNavigateUp()
+
+            is AddSoundEvent.OnMessageChanged -> updateMessage(viewEvent.message)
+            AddSoundEvent.ClearMessageField -> updateMessage("")
         }
     }
 
     init {
         updateViewState { copy(userImageUri = args.imageUri.toUri()) }
+    }
+
+    private fun updateMessage(prompt: String) {
+        updateViewState { copy(userMessage = prompt) }
     }
 
     private fun startRecording() {
