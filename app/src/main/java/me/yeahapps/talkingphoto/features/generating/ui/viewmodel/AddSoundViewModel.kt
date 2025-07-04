@@ -42,6 +42,8 @@ class AddSoundViewModel @Inject constructor(
 
             is AddSoundEvent.OnMessageChanged -> updateMessage(viewEvent.message)
             AddSoundEvent.ClearMessageField -> updateMessage("")
+
+            is AddSoundEvent.OnVoiceSelect -> updateViewState { copy(selectedVoice = viewEvent.voiceId) }
         }
     }
 

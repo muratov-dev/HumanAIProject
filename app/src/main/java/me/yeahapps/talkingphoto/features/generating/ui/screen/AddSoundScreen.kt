@@ -8,10 +8,11 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -20,8 +21,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -60,6 +59,7 @@ import me.yeahapps.talkingphoto.core.ui.component.topbar.HumanAISecondaryTopBar
 import me.yeahapps.talkingphoto.core.ui.theme.HumanAITheme
 import me.yeahapps.talkingphoto.core.ui.utils.collectFlowWithLifecycle
 import me.yeahapps.talkingphoto.core.ui.utils.formatMillisecondsToMmSs
+import me.yeahapps.talkingphoto.core.ui.utils.thenIf
 import me.yeahapps.talkingphoto.core.ui.utils.toPainter
 import me.yeahapps.talkingphoto.features.generating.ui.action.AddSoundAction
 import me.yeahapps.talkingphoto.features.generating.ui.component.SoundControlsIconButton
@@ -185,7 +185,11 @@ private fun AddSoundContent(
             if (selectedIndex == 0) {
                 MessageControls(
                     message = state.userMessage,
-                    onMessageChange = { onEvent(AddSoundEvent.OnMessageChanged(it.take(400))) })
+                    selectedVoice = state.selectedVoice,
+                    onMessageChange = { onEvent(AddSoundEvent.OnMessageChanged(it.take(400))) },
+                    onClearMessage = { onEvent(AddSoundEvent.ClearMessageField) },
+                    onVoiceSelect = { onEvent(AddSoundEvent.OnVoiceSelect(it)) },
+                    onDone = { onEvent(AddSoundEvent.StartGenerating) })
             } else {
                 SoundRecordControls(
                     audioDuration = state.audioDuration,
@@ -206,8 +210,10 @@ private fun AddSoundContent(
 private fun MessageControls(
     modifier: Modifier = Modifier,
     message: String = "",
+    selectedVoice: Int? = null,
     onMessageChange: (String) -> Unit = {},
     onClearMessage: () -> Unit = {},
+    onVoiceSelect: (Int) -> Unit = {},
     onDone: () -> Unit = {}
 ) {
     val voices = listOf(
@@ -236,22 +242,34 @@ private fun MessageControls(
             )
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(text = "${message.length}/400")
-                HumanAIIconButton(icon = R.drawable.ic_cancel_circle, modifier = Modifier.alpha(0.5f))
+                HumanAIIconButton(
+                    icon = R.drawable.ic_cancel_circle, onClick = onClearMessage, modifier = Modifier.alpha(0.5f)
+                )
             }
         }
         Spacer(Modifier.size(16.dp))
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(16.dp), contentPadding = PaddingValues(horizontal = 16.dp)
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
         ) {
-            items(voices) { voice ->
-                Column {
+            voices.forEachIndexed { index, voice ->
+                Column(
+                    modifier = Modifier.clickable(
+                        interactionSource = null, indication = null, onClick = { onVoiceSelect(index) }),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Image(
                         painter = painterResource(voice.first),
                         contentDescription = null,
                         modifier = Modifier
                             .size(64.dp)
                             .clip(CircleShape)
-                    )
+                            .thenIf(selectedVoice == index) {
+                                border(2.dp, HumanAITheme.colors.buttonPrimaryDefault, CircleShape)
+                            })
                     Text(text = voice.second)
                 }
             }
@@ -259,7 +277,8 @@ private fun MessageControls(
         Spacer(Modifier.size(16.dp))
         HumanAIPrimaryButton(
             centerContent = stringResource(R.string.common_next),
-            onClick = {},
+            enabled = selectedVoice != null && message.isNotBlank(),
+            onClick = onDone,
             modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .fillMaxWidth()
