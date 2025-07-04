@@ -27,6 +27,10 @@
     <string name="avatars_label">Avatars</string>
     <string name="avatars_create">Create Avatar</string>
     <string name="avatars_description">Stylize first and then\nanimate with AI</string>
+    <!--  Transform  -->
+    <string name="transform_headline">Transform</string>
+    <string name="transform_create">Create Video</string>
+    <string name="transform_select_style">Select a style</string>
     <!--  My Videos -->
     <string name="videos_label">My Videos</string>
     <string name="videos_headline">📹 My Videos</string>

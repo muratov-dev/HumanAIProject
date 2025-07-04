@@ -13,7 +13,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kotlinx.serialization.Serializable
 import me.yeahapps.talkingphoto.core.ui.navigation.commonModifier
-import me.yeahapps.talkingphoto.features.avatars.AvatarsContainer
+import me.yeahapps.talkingphoto.features.avatars.ui.screen.AvatarsContainer
 import me.yeahapps.talkingphoto.features.root.domain.BottomNavigationItem
 import me.yeahapps.talkingphoto.features.root.ui.component.HumanAIBottomNavigation
 import me.yeahapps.talkingphoto.features.settings.SettingsContainer

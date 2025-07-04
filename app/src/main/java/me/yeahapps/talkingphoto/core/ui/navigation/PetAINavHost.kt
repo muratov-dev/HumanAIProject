@@ -7,6 +7,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import me.yeahapps.talkingphoto.features.avatars.ui.screen.TransformContainer
+import me.yeahapps.talkingphoto.features.avatars.ui.screen.TransformScreen
 import me.yeahapps.talkingphoto.features.generating.ui.screen.AddSoundContainer
 import me.yeahapps.talkingphoto.features.generating.ui.screen.AddSoundScreen
 import me.yeahapps.talkingphoto.features.root.ui.screen.RootContainer
@@ -31,7 +33,7 @@ fun HumanAINavHost(
                     .systemBarsPadding(),
                 navigateUp = { navController.navigateUp() },
                 navigateToAddSound = { uri -> navController.navigate(AddSoundScreen(uri.toString())) },
-                navigateToTransform = { },
+                navigateToTransform = { uri -> navController.navigate(TransformScreen(uri.toString())) },
             )
         }
         composable<AddSoundScreen> {
@@ -39,6 +41,13 @@ fun HumanAINavHost(
                 modifier = Modifier
                     .commonModifier()
                     .systemBarsPadding(), navigateBack = {})
+        }
+        composable<TransformScreen> {
+            TransformContainer(
+                modifier = Modifier
+                    .commonModifier()
+                    .systemBarsPadding()
+            )
         }
     }
 }

@@ -1,4 +1,4 @@
-package me.yeahapps.talkingphoto.features.avatars
+package me.yeahapps.talkingphoto.features.avatars.ui.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
