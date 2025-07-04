@@ -20,6 +20,7 @@ import me.yeahapps.talkingphoto.features.settings.SettingsContainer
 import me.yeahapps.talkingphoto.features.upload.ui.screen.UploadPhotoScreen
 import me.yeahapps.talkingphoto.features.upload.ui.screen.UploadedPhotosContainer
 import me.yeahapps.talkingphoto.features.videos.VideosContainer
+import me.yeahapps.talkingphoto.features.videos.VideosScreen
 
 @Serializable
 object RootScreen
@@ -78,7 +79,9 @@ private fun RootContent(modifier: Modifier = Modifier, parentNavController: NavH
                 SettingsContainer(
                     modifier = Modifier
                         .commonModifier()
-                        .padding(bottom = innerPadding.calculateBottomPadding())
+                        .padding(bottom = innerPadding.calculateBottomPadding()),
+                    navigateToSubscriptions = {},
+                    navigateToMyVideos = { navController.navigate(BottomNavigationItem.MyVideos.route) }
                 )
             }
         }
