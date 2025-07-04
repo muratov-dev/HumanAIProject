@@ -40,6 +40,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -58,6 +59,7 @@ import kotlinx.serialization.Serializable
 import me.yeahapps.talkingphoto.R
 import me.yeahapps.talkingphoto.core.ui.component.button.filled.HumanAIButtonDefaults
 import me.yeahapps.talkingphoto.core.ui.component.button.filled.HumanAIPrimaryButton
+import me.yeahapps.talkingphoto.core.ui.component.button.icons.HumanAIIconButton
 import me.yeahapps.talkingphoto.core.ui.component.topbar.HumanAIPrimaryTopBar
 import me.yeahapps.talkingphoto.core.ui.theme.HumanAITheme
 import me.yeahapps.talkingphoto.core.ui.theme.robotoFamily
@@ -66,19 +68,30 @@ import me.yeahapps.talkingphoto.core.ui.utils.createTempImageFile
 import me.yeahapps.talkingphoto.features.crop.PhotoCropperScreen
 import me.yeahapps.talkingphoto.features.crop.utils.rememberPickPhotoLauncher
 import me.yeahapps.talkingphoto.features.crop.utils.rememberTakePhotoLauncher
+import me.yeahapps.talkingphoto.features.upload.domain.UploadType
 import timber.log.Timber
 
 @Serializable
-object UploadPhotoScreen
+data class UploadPhotoScreen(val uploadType: UploadType)
 
 @Composable
-fun UploadPhotoContainer(modifier: Modifier = Modifier, navigateToAddSound: (Uri) -> Unit) {
-    UploadPhotoContent(modifier = modifier, navigateToAddSound = navigateToAddSound)
+fun UploadPhotoContainer(
+    modifier: Modifier = Modifier,
+    uploadType: UploadType,
+    navigateUp: () -> Unit = {},
+    navigateToAddSound: (Uri) -> Unit = {},
+    navigateToTransform: (Uri) -> Unit = {}
+) {
+    UploadPhotoContent(modifier = modifier, navigateUp = navigateUp, navigateNext = {
+        when (uploadType) {
+            UploadType.Upload -> navigateToAddSound(it)
+            UploadType.Avatar -> navigateToTransform(it)
+        }
+    })
 }
 
 @Composable
-private fun UploadPhotoContent(modifier: Modifier = Modifier, navigateToAddSound: (Uri) -> Unit) {
-
+private fun UploadPhotoContent(modifier: Modifier = Modifier, navigateUp: () -> Unit, navigateNext: (Uri) -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val imageCropper = rememberImageCropper()
@@ -100,13 +113,13 @@ private fun UploadPhotoContent(modifier: Modifier = Modifier, navigateToAddSound
     val photoDonts = listOf("Not facing the camera", "Many people")
 
     val imagePicker = rememberPickPhotoLauncher(imageCropper = imageCropper, onSuccess = {
-        navigateToAddSound(it)
+        navigateNext(it)
         Timber.d(it.toString())
     }, onError = { Toast.makeText(context, "Error during image processing", Toast.LENGTH_SHORT).show() })
 
     val takePhoto =
         rememberTakePhotoLauncher(imageCropper = imageCropper, imageUriProvider = { tempImage?.uri }, onSuccess = {
-            navigateToAddSound(it)
+            navigateNext(it)
             Timber.d(it.toString())
         }, onError = {
             Toast.makeText(context, "Error during image processing", Toast.LENGTH_SHORT).show()
@@ -126,7 +139,9 @@ private fun UploadPhotoContent(modifier: Modifier = Modifier, navigateToAddSound
         })
 
     Scaffold(modifier = modifier, topBar = {
-        HumanAIPrimaryTopBar(title = stringResource(R.string.upload_headline_second), actions = {})
+        HumanAIPrimaryTopBar(title = stringResource(R.string.upload_headline_second), actions = {
+            HumanAIIconButton(icon = R.drawable.ic_cancel_circle, onClick = navigateUp, modifier = Modifier.alpha(0.5f))
+        })
     }) { innerPadding ->
         Column(
             modifier = Modifier

@@ -17,10 +17,10 @@ import me.yeahapps.talkingphoto.features.avatars.AvatarsContainer
 import me.yeahapps.talkingphoto.features.root.domain.BottomNavigationItem
 import me.yeahapps.talkingphoto.features.root.ui.component.HumanAIBottomNavigation
 import me.yeahapps.talkingphoto.features.settings.SettingsContainer
+import me.yeahapps.talkingphoto.features.upload.domain.UploadType
 import me.yeahapps.talkingphoto.features.upload.ui.screen.UploadPhotoScreen
 import me.yeahapps.talkingphoto.features.upload.ui.screen.UploadedPhotosContainer
 import me.yeahapps.talkingphoto.features.videos.VideosContainer
-import me.yeahapps.talkingphoto.features.videos.VideosScreen
 
 @Serializable
 object RootScreen
@@ -59,14 +59,14 @@ private fun RootContent(modifier: Modifier = Modifier, parentNavController: NavH
                     modifier = Modifier
                         .commonModifier()
                         .padding(bottom = innerPadding.calculateBottomPadding()),
-                    navigateToUpload = { parentNavController.navigate(UploadPhotoScreen) })
+                    navigateToUpload = { parentNavController.navigate(UploadPhotoScreen(UploadType.Upload)) })
             }
             composable(BottomNavigationItem.Avatars.route) {
                 AvatarsContainer(
                     modifier = Modifier
                         .commonModifier()
-                        .padding(bottom = innerPadding.calculateBottomPadding())
-                )
+                        .padding(bottom = innerPadding.calculateBottomPadding()),
+                    navigateToPhotoUpload = { parentNavController.navigate(UploadPhotoScreen(UploadType.Avatar)) })
             }
             composable(BottomNavigationItem.MyVideos.route) {
                 VideosContainer(
@@ -81,8 +81,7 @@ private fun RootContent(modifier: Modifier = Modifier, parentNavController: NavH
                         .commonModifier()
                         .padding(bottom = innerPadding.calculateBottomPadding()),
                     navigateToSubscriptions = {},
-                    navigateToMyVideos = { navController.navigate(BottomNavigationItem.MyVideos.route) }
-                )
+                    navigateToMyVideos = { navController.navigate(BottomNavigationItem.MyVideos.route) })
             }
         }
     }

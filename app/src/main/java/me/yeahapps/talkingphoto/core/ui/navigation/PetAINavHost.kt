@@ -6,6 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import me.yeahapps.talkingphoto.features.generating.ui.screen.AddSoundContainer
 import me.yeahapps.talkingphoto.features.generating.ui.screen.AddSoundScreen
 import me.yeahapps.talkingphoto.features.root.ui.screen.RootContainer
@@ -22,11 +23,16 @@ fun HumanAINavHost(
             RootContainer(parentNavController = navController)
         }
         composable<UploadPhotoScreen> {
+            val args = it.toRoute<UploadPhotoScreen>()
             UploadPhotoContainer(
+                uploadType = args.uploadType,
                 modifier = Modifier
                     .commonModifier()
                     .systemBarsPadding(),
-                navigateToAddSound = { navController.navigate(AddSoundScreen(it.toString())) })
+                navigateUp = { navController.navigateUp() },
+                navigateToAddSound = { uri -> navController.navigate(AddSoundScreen(uri.toString())) },
+                navigateToTransform = { },
+            )
         }
         composable<AddSoundScreen> {
             AddSoundContainer(

@@ -20,6 +20,12 @@ val robotoFamily = FontFamily(
 
 @Immutable
 data class HumanAITypography(
+    val titleBold: TextStyle = TextStyle(
+        fontFamily = robotoFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 30.sp,
+        lineHeight = 36.sp
+    ),
     val headlineExtraBold: TextStyle = TextStyle(
         fontFamily = robotoFamily,
         fontWeight = FontWeight.ExtraBold,

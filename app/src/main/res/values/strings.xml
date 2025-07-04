@@ -25,6 +25,8 @@
 
     <!--  Avatars  -->
     <string name="avatars_label">Avatars</string>
+    <string name="avatars_create">Create Avatar</string>
+    <string name="avatars_description">Stylize first and then\nanimate with AI</string>
     <!--  My Videos -->
     <string name="videos_label">My Videos</string>
     <string name="videos_headline">📹 My Videos</string>
