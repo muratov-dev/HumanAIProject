@@ -3,7 +3,17 @@
     <string name="app_name">HumanAIProject</string>
     <string name="common_done">Done</string>
     <string name="common_next">Next</string>
+    <string name="common_try">Try It Now!</string>
     <string name="common_or">or</string>
+    <string name="common_privacy_policy"><![CDATA[<a href="http://yeahapps.me/privacy">Privacy Policy</a>]]></string>
+    <string name="common_terms_of_use"><![CDATA[<a href="http://yeahapps.me/terms">Terms of Use</a>]]></string>
+    <string name="common_limited_version">Limited version</string>
+
+    <!--  Onboarding  -->
+    <string name="onboarding_title_1">Bring Photos to Life</string>
+    <string name="onboarding_description_1">Easily create talking videos with your voice or AI voiceovers</string>
+    <string name="onboarding_title_2">AI-Powered Lip Sync</string>
+    <string name="onboarding_description_2">Smartly sync lips with audio for natural and engaging animations</string>
 
     <!--  Upload  -->
     <string name="upload_label">Upload</string>

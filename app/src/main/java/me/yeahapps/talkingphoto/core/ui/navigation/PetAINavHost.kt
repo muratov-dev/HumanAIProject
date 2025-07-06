@@ -7,22 +7,28 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import me.yeahapps.talkingphoto.features.avatars.ui.screen.TransformContainer
-import me.yeahapps.talkingphoto.features.avatars.ui.screen.TransformScreen
-import me.yeahapps.talkingphoto.features.generating.ui.screen.AddSoundContainer
-import me.yeahapps.talkingphoto.features.generating.ui.screen.AddSoundScreen
-import me.yeahapps.talkingphoto.features.root.ui.screen.RootContainer
-import me.yeahapps.talkingphoto.features.root.ui.screen.RootScreen
-import me.yeahapps.talkingphoto.features.upload.ui.screen.UploadPhotoContainer
-import me.yeahapps.talkingphoto.features.upload.ui.screen.UploadPhotoScreen
+import me.yeahapps.talkingphoto.feature.avatars.ui.screen.TransformContainer
+import me.yeahapps.talkingphoto.feature.avatars.ui.screen.TransformScreen
+import me.yeahapps.talkingphoto.feature.generating.ui.screen.AddSoundContainer
+import me.yeahapps.talkingphoto.feature.generating.ui.screen.AddSoundScreen
+import me.yeahapps.talkingphoto.feature.onboarding.ui.screen.OnboardingContainer
+import me.yeahapps.talkingphoto.feature.onboarding.ui.screen.OnboardingScreen
+import me.yeahapps.talkingphoto.feature.root.ui.screen.RootContainer
+import me.yeahapps.talkingphoto.feature.root.ui.screen.RootScreen
+import me.yeahapps.talkingphoto.feature.upload.ui.screen.UploadPhotoContainer
+import me.yeahapps.talkingphoto.feature.upload.ui.screen.UploadPhotoScreen
 
 @Composable
 fun HumanAINavHost(
-    startDestination: Any, navController: NavHostController, modifier: Modifier = Modifier
+    startDestination: Any, navController: NavHostController, isFirstLaunch: Boolean, modifier: Modifier = Modifier
 ) {
     NavHost(navController = navController, startDestination = startDestination, modifier = modifier) {
+        composable<OnboardingScreen> {
+            OnboardingContainer(
+                modifier = Modifier.commonModifier(), navigateToSubscriptions = { navController.navigate(RootScreen) })
+        }
         composable<RootScreen> {
-            RootContainer(parentNavController = navController)
+            RootContainer(parentNavController = navController, isFirstLaunch = isFirstLaunch)
         }
         composable<UploadPhotoScreen> {
             val args = it.toRoute<UploadPhotoScreen>()
