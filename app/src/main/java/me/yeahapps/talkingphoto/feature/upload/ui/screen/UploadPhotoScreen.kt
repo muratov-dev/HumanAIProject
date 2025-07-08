@@ -65,9 +65,9 @@ import me.yeahapps.talkingphoto.core.ui.theme.HumanAITheme
 import me.yeahapps.talkingphoto.core.ui.theme.robotoFamily
 import me.yeahapps.talkingphoto.core.ui.utils.TempImage
 import me.yeahapps.talkingphoto.core.ui.utils.createTempImageFile
-import me.yeahapps.talkingphoto.feature.crop.PhotoCropperScreen
-import me.yeahapps.talkingphoto.feature.crop.utils.rememberPickPhotoLauncher
-import me.yeahapps.talkingphoto.feature.crop.utils.rememberTakePhotoLauncher
+import me.yeahapps.talkingphoto.feature.settings.crop.PhotoCropperScreen
+import me.yeahapps.talkingphoto.feature.settings.crop.utils.rememberPickPhotoLauncher
+import me.yeahapps.talkingphoto.feature.settings.crop.utils.rememberTakePhotoLauncher
 import me.yeahapps.talkingphoto.feature.upload.domain.UploadType
 import timber.log.Timber
 

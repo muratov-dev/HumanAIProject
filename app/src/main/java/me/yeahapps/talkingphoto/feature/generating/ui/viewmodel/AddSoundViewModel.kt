@@ -37,7 +37,10 @@ class AddSoundViewModel @Inject constructor(
             }
 
             AddSoundEvent.StopRecording -> stopRecording()
-            AddSoundEvent.StartGenerating -> {}
+            AddSoundEvent.StartGenerating -> {
+                stopRecording()
+                sendAction(AddSoundAction.StartGenerating)
+            }
             AddSoundEvent.NavigateUp -> cancelRecordingAndNavigateUp()
 
             is AddSoundEvent.OnMessageChanged -> updateMessage(viewEvent.message)
@@ -52,7 +55,7 @@ class AddSoundViewModel @Inject constructor(
     }
 
     private fun updateMessage(prompt: String) {
-        updateViewState { copy(userMessage = prompt) }
+        updateViewState { copy(audioScript = prompt) }
     }
 
     private fun startRecording() {

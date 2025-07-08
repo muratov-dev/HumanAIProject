@@ -11,6 +11,8 @@ import me.yeahapps.talkingphoto.feature.avatars.ui.screen.TransformContainer
 import me.yeahapps.talkingphoto.feature.avatars.ui.screen.TransformScreen
 import me.yeahapps.talkingphoto.feature.generating.ui.screen.AddSoundContainer
 import me.yeahapps.talkingphoto.feature.generating.ui.screen.AddSoundScreen
+import me.yeahapps.talkingphoto.feature.generating.ui.screen.CreatingVideoContainer
+import me.yeahapps.talkingphoto.feature.generating.ui.screen.CreatingVideoScreen
 import me.yeahapps.talkingphoto.feature.onboarding.ui.screen.OnboardingContainer
 import me.yeahapps.talkingphoto.feature.onboarding.ui.screen.OnboardingScreen
 import me.yeahapps.talkingphoto.feature.root.ui.screen.RootContainer
@@ -46,10 +48,22 @@ fun HumanAINavHost(
             AddSoundContainer(
                 modifier = Modifier
                     .commonModifier()
-                    .systemBarsPadding(), navigateBack = {})
+                    .systemBarsPadding(),
+                navigateUp = {},
+                startGenerating = { audioScript, audioUri, imageUri ->
+                    navController.navigate(CreatingVideoScreen(audioScript, audioUri, imageUri))
+                })
         }
         composable<TransformScreen> {
             TransformContainer(
+                modifier = Modifier
+                    .commonModifier()
+                    .systemBarsPadding()
+            )
+        }
+
+        composable<CreatingVideoScreen> {
+            CreatingVideoContainer(
                 modifier = Modifier
                     .commonModifier()
                     .systemBarsPadding()

@@ -1,4 +1,4 @@
-package me.yeahapps.talkingphoto.feature.crop
+package me.yeahapps.talkingphoto.feature.settings.crop
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box

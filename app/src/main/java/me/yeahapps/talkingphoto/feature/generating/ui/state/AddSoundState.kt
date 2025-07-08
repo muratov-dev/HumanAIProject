@@ -6,7 +6,7 @@ data class AddSoundState(
     val isRecording: Boolean = false,
     val isPlaying: Boolean = false,
     val audioDuration: Long = 0L,
-    val userMessage: String = "",
+    val audioScript: String = "",
     val selectedVoice: Int? = null,
     val userImageUri: Uri? = null,
     val userAudioUri: Uri? = null,

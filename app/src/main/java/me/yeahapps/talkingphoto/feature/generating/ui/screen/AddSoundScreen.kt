@@ -30,6 +30,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -72,7 +73,10 @@ data class AddSoundScreen(val imageUri: String)
 
 @Composable
 fun AddSoundContainer(
-    modifier: Modifier = Modifier, viewModel: AddSoundViewModel = hiltViewModel(), navigateBack: () -> Unit
+    modifier: Modifier = Modifier,
+    viewModel: AddSoundViewModel = hiltViewModel(),
+    navigateUp: () -> Unit,
+    startGenerating: (audioScript: String?, audioUri: String, imageUri: String) -> Unit
 ) {
     val context = LocalContext.current
     val exoPlayer = remember {
@@ -89,11 +93,21 @@ fun AddSoundContainer(
         when (action) {
             AddSoundAction.PlaySound -> exoPlayer.play()
             AddSoundAction.PauseSound -> exoPlayer.pause()
-            AddSoundAction.StartGenerating -> {}
-            AddSoundAction.NavigateUp -> {}
+            AddSoundAction.NavigateUp -> navigateUp()
+            AddSoundAction.StartGenerating -> {
+                startGenerating(state.audioScript, state.userAudioUri.toString(), state.userImageUri.toString())
+            }
+
             null -> {}
         }
     }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            exoPlayer.release()
+        }
+    }
+
     AddSoundContent(
         context = context,
         modifier = modifier,
@@ -184,7 +198,7 @@ private fun AddSoundContent(
 
             if (selectedIndex == 0) {
                 MessageControls(
-                    message = state.userMessage,
+                    message = state.audioScript,
                     selectedVoice = state.selectedVoice,
                     onMessageChange = { onEvent(AddSoundEvent.OnMessageChanged(it.take(400))) },
                     onClearMessage = { onEvent(AddSoundEvent.ClearMessageField) },
@@ -194,6 +208,7 @@ private fun AddSoundContent(
                 SoundRecordControls(
                     audioDuration = state.audioDuration,
                     isPlayingButtonEnabled = state.userAudioUri != null,
+                    isDoneButtonEnabled = state.isRecording || state.userAudioUri != null,
                     isPlaying = state.isPlaying,
                     isRecording = state.isRecording,
                     onPlay = { onEvent(AddSoundEvent.PlaySound) },
@@ -292,6 +307,7 @@ private fun SoundRecordControls(
     modifier: Modifier = Modifier,
     audioDuration: Long = 0L,
     isPlayingButtonEnabled: Boolean = false,
+    isDoneButtonEnabled: Boolean = false,
     isPlaying: Boolean = false,
     isRecording: Boolean = false,
     onPlay: () -> Unit = {},
@@ -317,7 +333,11 @@ private fun SoundRecordControls(
                 SoundControlsIconButton(
                     icon = if (isRecording) R.drawable.ic_stop else R.drawable.ic_mic,
                     onClick = { if (isRecording) onStop() else onRecord() })
-                SoundControlsIconButton(icon = R.drawable.ic_arrow_right, onClick = onDone)
+                SoundControlsIconButton(
+                    icon = R.drawable.ic_arrow_right,
+                    enabled = isDoneButtonEnabled,
+                    onClick = onDone
+                )
             }
         }
     }

@@ -1,0 +1,18 @@
+package me.yeahapps.talkingphoto.feature.generating.di
+
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import me.yeahapps.talkingphoto.feature.generating.data.repository.GeneratingRepositoryImpl
+import me.yeahapps.talkingphoto.feature.generating.domain.repository.GeneratingRepository
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class GeneratingRepositoryModule {
+
+    @Singleton
+    @Binds
+    abstract fun bindGeneratingRepository(repository: GeneratingRepositoryImpl): GeneratingRepository
+}

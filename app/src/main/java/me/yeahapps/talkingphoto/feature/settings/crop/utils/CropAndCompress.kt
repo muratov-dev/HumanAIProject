@@ -1,4 +1,4 @@
-package me.yeahapps.talkingphoto.feature.crop.utils
+package me.yeahapps.talkingphoto.feature.settings.crop.utils
 
 import android.content.Context
 import android.graphics.Bitmap
