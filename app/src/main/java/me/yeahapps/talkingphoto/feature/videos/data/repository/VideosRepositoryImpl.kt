@@ -21,8 +21,8 @@ class VideosRepositoryImpl @Inject constructor(
         return dao.getVideos().map { list -> list.map { it.toDomain() } }
     }
 
-    override suspend fun createVideo(model: VideoModel) {
-        dao.addVideo(model.toEntity())
+    override suspend fun createVideo(model: VideoModel): Long {
+        return dao.addVideo(model.toEntity())
     }
 
     override suspend fun deleteVideo(id: Long) {

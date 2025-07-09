@@ -1,5 +1,6 @@
 package me.yeahapps.talkingphoto.feature.generating.ui.screen
 
+import android.widget.Toast
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -54,12 +55,22 @@ import timber.log.Timber
 data class CreatingVideoScreen(val audioScript: String? = null, val audioUri: String, val imageUri: String)
 
 @Composable
-fun CreatingVideoContainer(modifier: Modifier = Modifier, viewModel: CreatingVideoViewModel = hiltViewModel()) {
+fun CreatingVideoContainer(
+    modifier: Modifier = Modifier,
+    viewModel: CreatingVideoViewModel = hiltViewModel(),
+    navigateUp: () -> Unit,
+    navigateToVideo: (Long) -> Unit
+) {
+    val context = LocalContext.current
+
     val state by viewModel.viewState.collectAsStateWithLifecycle()
     viewModel.viewActions.collectFlowWithLifecycle { action ->
         when (action) {
-            is CreatingVideoAction.ShowVideoGeneratingError -> Timber.d("error")
-            is CreatingVideoAction.NavigateToVideo -> Timber.d("success")
+            is CreatingVideoAction.ShowVideoGeneratingError -> {
+                Toast.makeText(context, "UnknownError", Toast.LENGTH_SHORT).show()
+                navigateUp()
+            }
+            is CreatingVideoAction.NavigateToVideo -> navigateToVideo(action.videoId)
             null -> {}
         }
     }

@@ -15,7 +15,9 @@ class VideosViewModel @Inject constructor(
 ) : BaseViewModel<VideosState, VideosEvent, VideosAction>(VideosState()) {
 
     override fun obtainEvent(viewEvent: VideosEvent) {
-
+        when(viewEvent){
+            is VideosEvent.NavigateToVideoInfo -> sendAction(VideosAction.NavigateToVideoInfo(viewEvent.videoId))
+        }
     }
 
     init {

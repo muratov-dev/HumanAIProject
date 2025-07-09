@@ -15,8 +15,10 @@ data class HumanAIColors(
     val textAccent: Color = Color.Unspecified,
 
     val buttonPrimaryDisabled: Color = Color.Unspecified,
+    val buttonSecondaryDisabled: Color = Color.Unspecified,
 
     val buttonPrimaryDefault: Color = Color.Unspecified,
+    val buttonSecondaryDefault: Color = Color.Unspecified,
     val buttonTertiaryDefault: Color = Color.Unspecified,
 
     val buttonTextPrimary: Color = Color.Unspecified,
@@ -43,8 +45,10 @@ data class HumanAIColors(
             textAccent = Color(0xFFFDE16C),
 
             buttonPrimaryDisabled = Color(0x80FDE16C),
+            buttonSecondaryDisabled = Color(0x80FDE16C),
 
             buttonPrimaryDefault = Color(0xFFFDE16C),
+            buttonSecondaryDefault = Color(0xFF1C1C3F),
             buttonTertiaryDefault = Color(0x1AFFFFFF),
 
             buttonTextPrimary = Color(0xFF000000),

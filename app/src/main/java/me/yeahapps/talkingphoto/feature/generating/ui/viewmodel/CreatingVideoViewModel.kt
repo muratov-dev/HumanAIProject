@@ -56,7 +56,7 @@ class CreatingVideoViewModel @Inject constructor(
         if (videoPath == null) sendError()
         timer?.cancel()
         timer = null
-        videosRepository.createVideo(
+        val videoId = videosRepository.createVideo(
             VideoModel(
                 title = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")),
                 imageUrl = imageUrl,
@@ -66,7 +66,7 @@ class CreatingVideoViewModel @Inject constructor(
 
         updateViewState { copy(progress = 1f, isGeneratingVideo = false, isGeneratingFinished = true) }
         delay(1000)
-        sendAction(CreatingVideoAction.NavigateToVideo(videoPath = videoPath))
+        sendAction(CreatingVideoAction.NavigateToVideo(videoId))
     }
 
     private fun startProgressUpdateTimer() {

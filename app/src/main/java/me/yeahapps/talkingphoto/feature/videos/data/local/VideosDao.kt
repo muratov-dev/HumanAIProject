@@ -22,5 +22,5 @@ interface VideosDao {
     suspend fun deleteVideo(id: Long)
 
     @Upsert
-    suspend fun addVideo(model: VideoEntity)
+    suspend fun addVideo(model: VideoEntity): Long
 }

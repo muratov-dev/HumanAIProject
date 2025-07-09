@@ -19,6 +19,8 @@ import me.yeahapps.talkingphoto.feature.root.ui.screen.RootContainer
 import me.yeahapps.talkingphoto.feature.root.ui.screen.RootScreen
 import me.yeahapps.talkingphoto.feature.upload.ui.screen.UploadPhotoContainer
 import me.yeahapps.talkingphoto.feature.upload.ui.screen.UploadPhotoScreen
+import me.yeahapps.talkingphoto.feature.videos.ui.screen.VideoInfoContainer
+import me.yeahapps.talkingphoto.feature.videos.ui.screen.VideoInfoScreen
 
 @Composable
 fun HumanAINavHost(
@@ -65,6 +67,19 @@ fun HumanAINavHost(
         composable<CreatingVideoScreen> {
             CreatingVideoContainer(
                 modifier = Modifier
+                    .commonModifier()
+                    .systemBarsPadding(),
+                navigateUp = { navController.navigateUp() },
+                navigateToVideo = {
+                    navController.navigate(VideoInfoScreen(it)) {
+                        navController.popBackStack(RootScreen, false)
+                    }
+                })
+        }
+
+        composable<VideoInfoScreen> {
+            VideoInfoContainer(
+                Modifier
                     .commonModifier()
                     .systemBarsPadding()
             )

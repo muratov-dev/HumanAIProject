@@ -25,6 +25,7 @@ import me.yeahapps.talkingphoto.feature.subscription.ui.screen.SubscriptionsCont
 import me.yeahapps.talkingphoto.feature.upload.domain.UploadType
 import me.yeahapps.talkingphoto.feature.upload.ui.screen.UploadPhotoScreen
 import me.yeahapps.talkingphoto.feature.upload.ui.screen.UploadedPhotosContainer
+import me.yeahapps.talkingphoto.feature.videos.ui.screen.VideoInfoScreen
 import me.yeahapps.talkingphoto.feature.videos.ui.screen.VideosContainer
 
 @Serializable
@@ -88,7 +89,8 @@ private fun RootContent(
                 VideosContainer(
                     modifier = Modifier
                         .commonModifier()
-                        .padding(bottom = innerPadding.calculateBottomPadding())
+                        .padding(bottom = innerPadding.calculateBottomPadding()),
+                    navigateToVideoInfo = { parentNavController.navigate(VideoInfoScreen(it)) }
                 )
             }
             composable(BottomNavigationItem.Settings.route) {

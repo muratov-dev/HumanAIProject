@@ -5,6 +5,8 @@
     <string name="common_next">Next</string>
     <string name="common_try">Try It Now!</string>
     <string name="common_or">or</string>
+    <string name="common_share">Share</string>
+    <string name="common_save">Save</string>
     <string name="common_privacy_policy"><![CDATA[<a href="http://yeahapps.me/privacy">Privacy Policy</a>]]></string>
     <string name="common_terms_of_use"><![CDATA[<a href="http://yeahapps.me/terms">Terms of Use</a>]]></string>
     <string name="common_limited_version">Limited version</string>

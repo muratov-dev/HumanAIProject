@@ -15,7 +15,7 @@ android {
 
     defaultConfig {
         applicationId = "me.yeahapps.talkingphoto"
-        minSdk = 28
+        minSdk = 29
         targetSdk = 36
         val majorVersion = 0
         val minorVersion = 0
