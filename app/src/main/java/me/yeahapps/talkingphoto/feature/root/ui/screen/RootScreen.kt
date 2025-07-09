@@ -25,7 +25,7 @@ import me.yeahapps.talkingphoto.feature.subscription.ui.screen.SubscriptionsCont
 import me.yeahapps.talkingphoto.feature.upload.domain.UploadType
 import me.yeahapps.talkingphoto.feature.upload.ui.screen.UploadPhotoScreen
 import me.yeahapps.talkingphoto.feature.upload.ui.screen.UploadedPhotosContainer
-import me.yeahapps.talkingphoto.feature.videos.VideosContainer
+import me.yeahapps.talkingphoto.feature.videos.ui.screen.VideosContainer
 
 @Serializable
 object RootScreen

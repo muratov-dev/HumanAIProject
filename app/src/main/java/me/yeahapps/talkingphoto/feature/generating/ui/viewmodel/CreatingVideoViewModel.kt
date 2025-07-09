@@ -11,12 +11,17 @@ import me.yeahapps.talkingphoto.feature.generating.domain.repository.GeneratingR
 import me.yeahapps.talkingphoto.feature.generating.ui.action.CreatingVideoAction
 import me.yeahapps.talkingphoto.feature.generating.ui.screen.CreatingVideoScreen
 import me.yeahapps.talkingphoto.feature.generating.ui.state.CreatingVideoState
+import me.yeahapps.talkingphoto.feature.videos.domain.model.VideoModel
+import me.yeahapps.talkingphoto.feature.videos.domain.repository.VideosRepository
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
 class CreatingVideoViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val generatingRepository: GeneratingRepository,
+    private val videosRepository: VideosRepository,
 ) : BaseViewModel<CreatingVideoState, Any, CreatingVideoAction>(CreatingVideoState()) {
 
     private val args = savedStateHandle.toRoute<CreatingVideoScreen>()
@@ -51,17 +56,17 @@ class CreatingVideoViewModel @Inject constructor(
         if (videoPath == null) sendError()
         timer?.cancel()
         timer = null
-//        myWorksRepository.createMyWork(
-//            MyWorkModel(
-//                title = if (args.songName.isEmpty()) "My pet $animateImageId" else args.songName,
-//                imageUrl = imageUrl,
-//                videoPath = videoPath
-//            )
-//        )
+        videosRepository.createVideo(
+            VideoModel(
+                title = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")),
+                imageUrl = imageUrl,
+                videoPath = videoPath!!
+            )
+        )
 
         updateViewState { copy(progress = 1f, isGeneratingVideo = false, isGeneratingFinished = true) }
         delay(1000)
-        sendAction(CreatingVideoAction.NavigateToVideo(videoPath = videoPath!!))
+        sendAction(CreatingVideoAction.NavigateToVideo(videoPath = videoPath))
     }
 
     private fun startProgressUpdateTimer() {
