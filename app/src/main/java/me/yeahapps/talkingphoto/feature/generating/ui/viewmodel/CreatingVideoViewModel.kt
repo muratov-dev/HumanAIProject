@@ -5,6 +5,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import me.yeahapps.talkingphoto.core.ui.viewmodel.BaseViewModel
 import me.yeahapps.talkingphoto.feature.generating.domain.repository.GeneratingRepository
 import me.yeahapps.talkingphoto.feature.generating.ui.action.CreatingVideoAction
@@ -24,6 +25,7 @@ class CreatingVideoViewModel @Inject constructor(
     override fun obtainEvent(viewEvent: Any) {}
 
     init {
+        updateViewState { copy(imageUri = args.imageUri.toUri()) }
         startCreatingVideo()
     }
 
@@ -36,7 +38,7 @@ class CreatingVideoViewModel @Inject constructor(
 
         val imageUrl = generatingRepository.uploadImage(args.imageUri.toUri())
         if (imageUrl == null) sendError()
-        updateViewState { copy(isImageUploaded = true) }
+        updateViewState { copy(isImageUploaded = true, isGeneratingVideo = true) }
 
         startProgressUpdateTimer()
         val audioUrl = generatingRepository.uploadAudio(args.audioUri.toUri())
@@ -57,8 +59,9 @@ class CreatingVideoViewModel @Inject constructor(
 //            )
 //        )
 
+        updateViewState { copy(progress = 1f, isGeneratingVideo = false, isGeneratingFinished = true) }
+        delay(1000)
         sendAction(CreatingVideoAction.NavigateToVideo(videoPath = videoPath!!))
-        updateViewState { copy(progress = 1f) }
     }
 
     private fun startProgressUpdateTimer() {

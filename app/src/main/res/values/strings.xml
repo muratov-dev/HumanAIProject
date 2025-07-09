@@ -47,4 +47,12 @@
     <!--  Settings  -->
     <string name="settings_label">Settings</string>
     <string name="settings_headline">⚙️ Settings</string>
+
+    <!--  Creating Video  -->
+    <string name="creating_video_title">Creating Video</string>
+    <string name="creating_video_label">Your video is being generated with AI</string>
+    <string name="creating_video_description">Hold tight! Your starring moment is on the way.</string>
+    <string name="creating_video_step_1">Uploaded Photo</string>
+    <string name="creating_video_step_2">Generating Video…</string>
+    <string name="creating_video_step_3">Download Video</string>
 </resources>

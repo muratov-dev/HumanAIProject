@@ -32,17 +32,35 @@ data class HumanAITypography(
         fontSize = 24.sp,
         lineHeight = 36.sp
     ),
-    val titleMedium: TextStyle = TextStyle(
+    val headlineSemiBold: TextStyle = TextStyle(
         fontFamily = robotoFamily,
-        fontWeight = FontWeight.Medium,
-        fontSize = 20.sp,
-        lineHeight = 30.sp
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 24.sp,
+        lineHeight = 36.sp
+    ),
+    val headlineBold: TextStyle = TextStyle(
+        fontFamily = robotoFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 24.sp,
+        lineHeight = 36.sp
     ),
     val bodySemiBold: TextStyle = TextStyle(
         fontFamily = robotoFamily,
         fontWeight = FontWeight.SemiBold,
         fontSize = 20.sp,
         lineHeight = 30.sp
+    ),
+    val titleMedium: TextStyle = TextStyle(
+        fontFamily = robotoFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 20.sp,
+        lineHeight = 30.sp
+    ),
+    val bodyMedium: TextStyle = TextStyle(
+        fontFamily = robotoFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 16.sp,
+        lineHeight = 24.sp
     ),
     val bodyRegular: TextStyle = TextStyle(
         fontFamily = robotoFamily,

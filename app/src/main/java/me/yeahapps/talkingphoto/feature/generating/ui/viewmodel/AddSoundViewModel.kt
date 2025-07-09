@@ -37,10 +37,7 @@ class AddSoundViewModel @Inject constructor(
             }
 
             AddSoundEvent.StopRecording -> stopRecording()
-            AddSoundEvent.StartGenerating -> {
-                stopRecording()
-                sendAction(AddSoundAction.StartGenerating)
-            }
+            AddSoundEvent.StartGenerating -> startGenerating()
             AddSoundEvent.NavigateUp -> cancelRecordingAndNavigateUp()
 
             is AddSoundEvent.OnMessageChanged -> updateMessage(viewEvent.message)
@@ -80,6 +77,15 @@ class AddSoundViewModel @Inject constructor(
         updateViewState { copy(userAudioUri = audioRecorder.outputFile?.toUri()) }
         audioRecordingJob?.cancel()
         audioRecordingJob = null
+    }
+
+    private fun startGenerating(){
+        updateViewState { copy(isRecording = false) }
+        audioRecorder.stopRecording()
+        updateViewState { copy(userAudioUri = audioRecorder.outputFile?.toUri()) }
+        audioRecordingJob?.cancel()
+        audioRecordingJob = null
+        sendAction(AddSoundAction.StartGenerating)
     }
 
     private fun cancelRecordingAndNavigateUp() {
