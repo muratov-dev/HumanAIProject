@@ -47,15 +47,20 @@ import me.yeahapps.talkingphoto.core.ui.component.topbar.HumanAISecondaryTopBar
 import me.yeahapps.talkingphoto.core.ui.theme.HumanAITheme
 import me.yeahapps.talkingphoto.core.ui.utils.ManagePlayerLifecycle
 import me.yeahapps.talkingphoto.core.ui.utils.collectFlowWithLifecycle
+import me.yeahapps.talkingphoto.core.ui.utils.shareFile
+import me.yeahapps.talkingphoto.feature.videos.ui.action.VideoInfoAction
 import me.yeahapps.talkingphoto.feature.videos.ui.event.VideoInfoEvent
 import me.yeahapps.talkingphoto.feature.videos.ui.state.VideoInfoState
 import me.yeahapps.talkingphoto.feature.videos.ui.viewmodel.VideoInfoViewModel
+import java.io.File
 
 @Serializable
 data class VideoInfoScreen(val videoId: Long)
 
 @Composable
-fun VideoInfoContainer(modifier: Modifier = Modifier, viewModel: VideoInfoViewModel = hiltViewModel()) {
+fun VideoInfoContainer(
+    modifier: Modifier = Modifier, viewModel: VideoInfoViewModel = hiltViewModel(), navigateUp: () -> Unit
+) {
 
     val context = LocalContext.current
     val exoPlayer = remember {
@@ -68,6 +73,7 @@ fun VideoInfoContainer(modifier: Modifier = Modifier, viewModel: VideoInfoViewMo
     val state by viewModel.viewState.collectAsStateWithLifecycle()
     viewModel.viewActions.collectFlowWithLifecycle { action ->
         when (action) {
+            VideoInfoAction.NavigateUp -> navigateUp()
             null -> {}
         }
     }
@@ -96,6 +102,7 @@ private fun VideoInfoContent(
     state: VideoInfoState = VideoInfoState(),
     onEvent: (VideoInfoEvent) -> Unit = {}
 ) {
+    val context = LocalContext.current
     val hazeState = rememberHazeState(true)
     val hazeStyle = HazeStyle(blurRadius = 75.dp, tint = HazeTint(Color(0x0D000000)))
 
@@ -104,10 +111,12 @@ private fun VideoInfoContent(
             HumanAIIconButton(
                 icon = R.drawable.ic_delete,
                 colors = HumanAIIconButtonDefaults.colors().copy(contentColor = HumanAITheme.colors.error),
-                onClick = {})
+                onClick = { onEvent(VideoInfoEvent.DeleteWork) })
         }, actions = {
             HumanAIIconButton(
-                icon = R.drawable.ic_cancel_circle, modifier = Modifier.alpha(0.5f), onClick = {})
+                icon = R.drawable.ic_cancel_circle,
+                modifier = Modifier.alpha(0.5f),
+                onClick = { onEvent(VideoInfoEvent.NavigateUp) })
         })
     }) { innerPadding ->
         Column(modifier = Modifier.padding(top = innerPadding.calculateTopPadding(), start = 16.dp, end = 16.dp)) {
@@ -156,13 +165,13 @@ private fun VideoInfoContent(
                     centerContent = stringResource(R.string.common_save),
                     icon = R.drawable.ic_save,
                     modifier = Modifier.weight(1f),
-                    onClick = {})
+                    onClick = { onEvent(VideoInfoEvent.SaveToGallery) })
                 Spacer(Modifier.size(16.dp))
                 HumanAISecondaryButton(
                     centerContent = stringResource(R.string.common_share),
                     icon = R.drawable.ic_send,
                     modifier = Modifier.weight(1f),
-                    onClick = {})
+                    onClick = { state.videoPath?.let { shareFile(context, File(it), "video/mp4") } })
             }
             Spacer(Modifier.size(40.dp))
         }

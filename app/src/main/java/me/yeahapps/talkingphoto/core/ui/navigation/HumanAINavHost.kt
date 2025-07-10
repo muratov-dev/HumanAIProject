@@ -81,8 +81,7 @@ fun HumanAINavHost(
             VideoInfoContainer(
                 Modifier
                     .commonModifier()
-                    .systemBarsPadding()
-            )
+                    .systemBarsPadding(), navigateUp = { navController.navigateUp() })
         }
     }
 }

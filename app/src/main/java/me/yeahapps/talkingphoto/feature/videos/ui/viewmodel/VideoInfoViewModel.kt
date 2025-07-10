@@ -30,13 +30,30 @@ class VideoInfoViewModel @Inject constructor(
     private val args = savedStateHandle.toRoute<VideoInfoScreen>()
 
     override fun obtainEvent(viewEvent: VideoInfoEvent) {
+        when (viewEvent) {
+            VideoInfoEvent.NavigateUp -> sendAction(VideoInfoAction.NavigateUp)
 
+            VideoInfoEvent.DeleteWork -> viewModelScoped {
+                videosRepository.deleteVideo(args.videoId)
+                sendAction(VideoInfoAction.NavigateUp)
+            }
+
+            VideoInfoEvent.SaveToGallery -> {
+                {
+                    viewModelScoped {
+                        currentState.videoPath?.let { saveVideoToGallery(it, currentState.videoTitle!!) }
+                    }
+                }
+            }
+        }
     }
 
     init {
         viewModelScoped {
             val videoInfo = videosRepository.getVideoInfo(args.videoId)
-            updateViewState { copy(imageUrl = videoInfo.imageUrl, videoPath = videoInfo.videoPath) }
+            updateViewState {
+                copy(videoTitle = videoInfo.title, imageUrl = videoInfo.imageUrl, videoPath = videoInfo.videoPath)
+            }
         }
     }
 

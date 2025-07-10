@@ -11,4 +11,7 @@
             name="raw"
             path="raw" />
     </paths>
+    <paths>
+        <files-path name="shared_files" path="." />
+    </paths>
 </resources>
