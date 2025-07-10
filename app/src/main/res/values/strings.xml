@@ -46,6 +46,8 @@
     <!--  My Videos -->
     <string name="videos_label">My Videos</string>
     <string name="videos_headline">📹 My Videos</string>
+    <string name="videos_empty_label">No Videos</string>
+    <string name="videos_empty_description">You haven’t created any videos</string>
     <!--  Settings  -->
     <string name="settings_label">Settings</string>
     <string name="settings_headline">⚙️ Settings</string>
