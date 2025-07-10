@@ -102,7 +102,7 @@ class GeneratingRepositoryImpl @Inject constructor(
         return null
     }
 
-    suspend fun saveVideoSilently(videoUrl: String, fileName: String): File? {
+    private suspend fun saveVideoSilently(videoUrl: String, fileName: String): File? {
         return withContext(Dispatchers.IO) {
             try {
                 val url = URL(videoUrl)

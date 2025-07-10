@@ -1,10 +1,10 @@
-package me.yeahapps.talkingphoto.feature.upload.ui.viewmodel
+package me.yeahapps.talkingphoto.feature.settings.viewmodel
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import me.yeahapps.talkingphoto.core.ui.viewmodel.BaseViewModel
-import me.yeahapps.talkingphoto.feature.upload.ui.action.SettingsAction
-import me.yeahapps.talkingphoto.feature.upload.ui.event.SettingsEvent
-import me.yeahapps.talkingphoto.feature.upload.ui.state.SettingsState
+import me.yeahapps.talkingphoto.feature.settings.action.SettingsAction
+import me.yeahapps.talkingphoto.feature.settings.event.SettingsEvent
+import me.yeahapps.talkingphoto.feature.settings.state.SettingsState
 import javax.inject.Inject
 
 @HiltViewModel

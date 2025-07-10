@@ -1,4 +1,4 @@
-package me.yeahapps.talkingphoto.feature.upload.ui.state
+package me.yeahapps.talkingphoto.feature.settings.state
 
 data class SettingsState(
     val videosCount: Int = 0,

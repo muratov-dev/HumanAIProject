@@ -24,4 +24,8 @@ object DatabaseModule {
     @Singleton
     @Provides
     fun provideVideosDao(database: HumanAIDatabase) = database.videosDao()
+
+    @Singleton
+    @Provides
+    fun provideUploadDao(database: HumanAIDatabase) = database.uploadDao()
 }

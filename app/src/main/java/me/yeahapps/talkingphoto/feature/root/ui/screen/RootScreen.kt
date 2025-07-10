@@ -20,9 +20,9 @@ import me.yeahapps.talkingphoto.core.ui.navigation.commonModifier
 import me.yeahapps.talkingphoto.feature.avatars.ui.screen.AvatarsContainer
 import me.yeahapps.talkingphoto.feature.root.domain.BottomNavigationItem
 import me.yeahapps.talkingphoto.feature.root.ui.component.HumanAIBottomNavigation
-import me.yeahapps.talkingphoto.feature.settings.SettingsContainer
+import me.yeahapps.talkingphoto.feature.settings.screen.SettingsContainer
 import me.yeahapps.talkingphoto.feature.subscription.ui.screen.SubscriptionsContainer
-import me.yeahapps.talkingphoto.feature.upload.domain.UploadType
+import me.yeahapps.talkingphoto.feature.upload.domain.model.UploadType
 import me.yeahapps.talkingphoto.feature.upload.ui.screen.UploadPhotoScreen
 import me.yeahapps.talkingphoto.feature.upload.ui.screen.UploadedPhotosContainer
 import me.yeahapps.talkingphoto.feature.videos.ui.screen.VideoInfoScreen

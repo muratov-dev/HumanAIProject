@@ -1,6 +1,7 @@
 package me.yeahapps.talkingphoto.feature.upload.ui.viewmodel
 
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collectLatest
 import me.yeahapps.talkingphoto.core.ui.viewmodel.BaseViewModel
 import me.yeahapps.talkingphoto.feature.upload.domain.repository.UploadRepository
 import me.yeahapps.talkingphoto.feature.upload.ui.action.UploadedPhotosAction
@@ -22,6 +23,11 @@ class UploadedPhotosViewModel @Inject constructor(
     init {
         viewModelScoped {
             uploadRepository.saveUser()
+        }
+        viewModelScoped {
+            uploadRepository.getUploadPhotos().collectLatest {
+                updateViewState { copy(photos = it) }
+            }
         }
     }
 }

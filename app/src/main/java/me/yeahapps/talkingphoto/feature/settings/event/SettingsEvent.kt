@@ -1,4 +1,4 @@
-package me.yeahapps.talkingphoto.feature.upload.ui.event
+package me.yeahapps.talkingphoto.feature.settings.event
 
 sealed interface SettingsEvent {
 

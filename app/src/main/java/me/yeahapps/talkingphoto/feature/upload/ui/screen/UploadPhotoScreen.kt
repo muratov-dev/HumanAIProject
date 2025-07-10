@@ -52,6 +52,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.attafitamim.krop.core.crop.RectCropShape
 import com.attafitamim.krop.core.crop.rememberImageCropper
 import kotlinx.coroutines.launch
@@ -64,11 +65,15 @@ import me.yeahapps.talkingphoto.core.ui.component.topbar.HumanAIPrimaryTopBar
 import me.yeahapps.talkingphoto.core.ui.theme.HumanAITheme
 import me.yeahapps.talkingphoto.core.ui.theme.robotoFamily
 import me.yeahapps.talkingphoto.core.ui.utils.TempImage
+import me.yeahapps.talkingphoto.core.ui.utils.collectFlowWithLifecycle
 import me.yeahapps.talkingphoto.core.ui.utils.createTempImageFile
-import me.yeahapps.talkingphoto.feature.settings.crop.PhotoCropperScreen
-import me.yeahapps.talkingphoto.feature.settings.crop.utils.rememberPickPhotoLauncher
-import me.yeahapps.talkingphoto.feature.settings.crop.utils.rememberTakePhotoLauncher
-import me.yeahapps.talkingphoto.feature.upload.domain.UploadType
+import me.yeahapps.talkingphoto.feature.crop.PhotoCropperScreen
+import me.yeahapps.talkingphoto.feature.crop.utils.rememberPickPhotoLauncher
+import me.yeahapps.talkingphoto.feature.crop.utils.rememberTakePhotoLauncher
+import me.yeahapps.talkingphoto.feature.upload.domain.model.UploadType
+import me.yeahapps.talkingphoto.feature.upload.ui.action.UploadPhotoAction
+import me.yeahapps.talkingphoto.feature.upload.ui.event.UploadPhotoEvent
+import me.yeahapps.talkingphoto.feature.upload.ui.viewmodel.UploadPhotoViewModel
 import timber.log.Timber
 
 @Serializable
@@ -78,20 +83,30 @@ data class UploadPhotoScreen(val uploadType: UploadType)
 fun UploadPhotoContainer(
     modifier: Modifier = Modifier,
     uploadType: UploadType,
+    viewModel: UploadPhotoViewModel = hiltViewModel(),
     navigateUp: () -> Unit = {},
     navigateToAddSound: (Uri) -> Unit = {},
     navigateToTransform: (Uri) -> Unit = {}
 ) {
-    UploadPhotoContent(modifier = modifier, navigateUp = navigateUp, navigateNext = {
-        when (uploadType) {
-            UploadType.Upload -> navigateToAddSound(it)
-            UploadType.Avatar -> navigateToTransform(it)
+
+    viewModel.viewActions.collectFlowWithLifecycle { action ->
+        when (action) {
+            UploadPhotoAction.NavigateUp -> navigateUp()
+            is UploadPhotoAction.NavigateNext -> {
+                when (uploadType) {
+                    UploadType.Upload -> navigateToAddSound(action.uri)
+                    UploadType.Avatar -> navigateToTransform(action.uri)
+                }
+            }
+
+            null -> {}
         }
-    })
+    }
+    UploadPhotoContent(modifier = modifier, onEvent = remember { { event -> viewModel.obtainEvent(event) } })
 }
 
 @Composable
-private fun UploadPhotoContent(modifier: Modifier = Modifier, navigateUp: () -> Unit, navigateNext: (Uri) -> Unit) {
+private fun UploadPhotoContent(modifier: Modifier = Modifier, onEvent: (UploadPhotoEvent) -> Unit = {}) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val imageCropper = rememberImageCropper()
@@ -113,13 +128,13 @@ private fun UploadPhotoContent(modifier: Modifier = Modifier, navigateUp: () -> 
     val photoDonts = listOf("Not facing the camera", "Many people")
 
     val imagePicker = rememberPickPhotoLauncher(imageCropper = imageCropper, onSuccess = {
-        navigateNext(it)
+        onEvent(UploadPhotoEvent.SavePhoto(it))
         Timber.d(it.toString())
     }, onError = { Toast.makeText(context, "Error during image processing", Toast.LENGTH_SHORT).show() })
 
     val takePhoto =
         rememberTakePhotoLauncher(imageCropper = imageCropper, imageUriProvider = { tempImage?.uri }, onSuccess = {
-            navigateNext(it)
+            onEvent(UploadPhotoEvent.SavePhoto(it))
             Timber.d(it.toString())
         }, onError = {
             Toast.makeText(context, "Error during image processing", Toast.LENGTH_SHORT).show()
@@ -140,7 +155,11 @@ private fun UploadPhotoContent(modifier: Modifier = Modifier, navigateUp: () -> 
 
     Scaffold(modifier = modifier, topBar = {
         HumanAIPrimaryTopBar(title = stringResource(R.string.upload_headline_second), actions = {
-            HumanAIIconButton(icon = R.drawable.ic_cancel_circle, onClick = navigateUp, modifier = Modifier.alpha(0.5f))
+            HumanAIIconButton(
+                icon = R.drawable.ic_cancel_circle,
+                onClick = { onEvent(UploadPhotoEvent.NavigateUp) },
+                modifier = Modifier.alpha(0.5f)
+            )
         })
     }) { innerPadding ->
         Column(

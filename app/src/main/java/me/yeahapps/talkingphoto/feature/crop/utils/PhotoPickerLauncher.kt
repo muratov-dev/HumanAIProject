@@ -1,4 +1,4 @@
-package me.yeahapps.talkingphoto.feature.settings.crop.utils
+package me.yeahapps.talkingphoto.feature.crop.utils
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult

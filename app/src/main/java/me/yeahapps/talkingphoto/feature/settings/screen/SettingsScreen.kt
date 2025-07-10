@@ -1,4 +1,4 @@
-package me.yeahapps.talkingphoto.feature.settings
+package me.yeahapps.talkingphoto.feature.settings.screen
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -34,10 +34,10 @@ import me.yeahapps.talkingphoto.R
 import me.yeahapps.talkingphoto.core.ui.component.topbar.HumanAIPrimaryTopBar
 import me.yeahapps.talkingphoto.core.ui.utils.collectFlowWithLifecycle
 import me.yeahapps.talkingphoto.feature.settings.component.SettingsButton
-import me.yeahapps.talkingphoto.feature.upload.ui.action.SettingsAction
-import me.yeahapps.talkingphoto.feature.upload.ui.event.SettingsEvent
-import me.yeahapps.talkingphoto.feature.upload.ui.state.SettingsState
-import me.yeahapps.talkingphoto.feature.upload.ui.viewmodel.SettingsViewModel
+import me.yeahapps.talkingphoto.feature.settings.action.SettingsAction
+import me.yeahapps.talkingphoto.feature.settings.event.SettingsEvent
+import me.yeahapps.talkingphoto.feature.settings.state.SettingsState
+import me.yeahapps.talkingphoto.feature.settings.viewmodel.SettingsViewModel
 
 @Composable
 fun SettingsContainer(
