@@ -25,7 +25,7 @@ android {
         versionName = "${majorVersion}.${minorVersion}.${patchVersion}"
         base.archivesName = "HumanAI-$versionName"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.me.yeahapps.talkingphoto.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {

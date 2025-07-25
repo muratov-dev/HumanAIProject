@@ -136,7 +136,7 @@ private fun VideoInfoContent(
                         SubcomposeAsyncImage(
                             model = it,
                             contentDescription = null,
-                            contentScale = ContentScale.Crop,
+                            contentScale = ContentScale.FillBounds,
                             modifier = Modifier
                                 .matchParentSize()
                                 .hazeSource(hazeState)

@@ -3,11 +3,14 @@ package me.yeahapps.talkingphoto.feature.generating.data.repository
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
+import androidx.core.net.toUri
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import me.yeahapps.talkingphoto.core.data.network.api.MainApiService
+import me.yeahapps.talkingphoto.core.data.network.api.TextToSpeechApiService
+import me.yeahapps.talkingphoto.core.data.network.model.TextToSpeechRequestDto
 import me.yeahapps.talkingphoto.core.data.network.model.animate_image.request.AnimateImageRequestDto
 import me.yeahapps.talkingphoto.core.data.network.model.animate_image.request.PhotoInfo
 import me.yeahapps.talkingphoto.core.data.network.model.animate_image.request.PtInfo
@@ -25,6 +28,7 @@ import javax.inject.Inject
 class GeneratingRepositoryImpl @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val mainApiService: MainApiService,
+    private val textToSpeechApiService: TextToSpeechApiService,
     private val sharedPreferences: SharedPreferences,
 ) : GeneratingRepository {
 
@@ -42,6 +46,22 @@ class GeneratingRepositoryImpl @Inject constructor(
         val fileRequestBody = filePath.asRequestBody(contentResolver, mediaType?.toMediaType())
         val multipartBody = MultipartBody.Part.createFormData("file", "audio.m4a", fileRequestBody)
         return uploadFile(multipartBody)
+    }
+
+    override suspend fun generateAudio(text: String, voiceId: String): String? {
+        val url = "https://api.elevenlabs.io/v1/text-to-speech/$voiceId"
+        val requestBody = TextToSpeechRequestDto(text = text)
+        val response = textToSpeechApiService.textToSpeech(url, requestBody)
+        if (response.isSuccessful) {
+            val inputStream = response.body()?.byteStream()
+            val file = File(context.cacheDir, "voice.mp3")
+            file.outputStream().use { inputStream?.copyTo(it) }
+
+            return file.toUri().toString()
+        } else {
+            Timber.e(response.errorBody()?.string())
+        }
+        return null
     }
 
     private suspend fun uploadFile(multipartBody: MultipartBody.Part): String? {

@@ -6,14 +6,15 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import me.yeahapps.talkingphoto.BuildConfig
+import me.yeahapps.talkingphoto.core.data.network.api.AvatarApiService
 import me.yeahapps.talkingphoto.core.data.network.api.MainApiService
+import me.yeahapps.talkingphoto.core.data.network.api.TextToSpeechApiService
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.logging.HttpLoggingInterceptor.Level
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
-import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
@@ -42,5 +43,13 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideApiService(retrofit: Retrofit): MainApiService = retrofit.create(MainApiService::class.java)
+    fun provideMainApiService(retrofit: Retrofit): MainApiService = retrofit.create(MainApiService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideAvatarsApiService(retrofit: Retrofit): AvatarApiService = retrofit.create(AvatarApiService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideTTSApiService(retrofit: Retrofit): TextToSpeechApiService = retrofit.create(TextToSpeechApiService::class.java)
 }

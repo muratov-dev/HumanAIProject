@@ -46,7 +46,14 @@ class CreatingVideoViewModel @Inject constructor(
         updateViewState { copy(isImageUploaded = true, isGeneratingVideo = true) }
 
         startProgressUpdateTimer()
-        val audioUrl = generatingRepository.uploadAudio(args.audioUri.toUri())
+        val audioUrl = if (args.audioUri != null) {
+            generatingRepository.uploadAudio(args.audioUri.toUri())
+        } else {
+            val generatedAudioPath = args.audioScript?.let { generatingRepository.generateAudio(it) }
+            if (generatedAudioPath == null) sendError()
+            val audioUrl = generatingRepository.uploadAudio(generatedAudioPath!!.toUri())
+            audioUrl
+        }
         if (audioUrl == null) sendError()
 
         val animateImageId = generatingRepository.animateImage(imageUrl!!, audioUrl!!)

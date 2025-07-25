@@ -52,7 +52,7 @@ import me.yeahapps.talkingphoto.feature.generating.ui.viewmodel.CreatingVideoVie
 import timber.log.Timber
 
 @Serializable
-data class CreatingVideoScreen(val audioScript: String? = null, val audioUri: String, val imageUri: String)
+data class CreatingVideoScreen(val audioScript: String? = null, val audioUri: String? = null, val imageUri: String)
 
 @Composable
 fun CreatingVideoContainer(

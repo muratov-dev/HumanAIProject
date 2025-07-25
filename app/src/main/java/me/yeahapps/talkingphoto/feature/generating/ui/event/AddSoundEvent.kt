@@ -12,6 +12,7 @@ sealed interface AddSoundEvent {
     data object PlaySound : AddSoundEvent
     data object PauseSound : AddSoundEvent
     data object StartGenerating : AddSoundEvent
+    data object StartGeneratingWithTTS : AddSoundEvent
     data object NavigateUp : AddSoundEvent
 
 }

@@ -9,6 +9,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import me.yeahapps.talkingphoto.core.ui.viewmodel.BaseViewModel
 import me.yeahapps.talkingphoto.feature.generating.data.media.AudioRecorder
+import me.yeahapps.talkingphoto.feature.generating.domain.repository.GeneratingRepository
 import me.yeahapps.talkingphoto.feature.generating.ui.action.AddSoundAction
 import me.yeahapps.talkingphoto.feature.generating.ui.event.AddSoundEvent
 import me.yeahapps.talkingphoto.feature.generating.ui.screen.AddSoundScreen
@@ -17,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddSoundViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle, private val audioRecorder: AudioRecorder
+    savedStateHandle: SavedStateHandle,
+    private val audioRecorder: AudioRecorder,
 ) : BaseViewModel<AddSoundState, AddSoundEvent, AddSoundAction>(AddSoundState()) {
 
     val args = savedStateHandle.toRoute<AddSoundScreen>()
@@ -38,6 +40,7 @@ class AddSoundViewModel @Inject constructor(
 
             AddSoundEvent.StopRecording -> stopRecording()
             AddSoundEvent.StartGenerating -> startGenerating()
+            AddSoundEvent.StartGeneratingWithTTS -> startGenerating()
             AddSoundEvent.NavigateUp -> cancelRecordingAndNavigateUp()
 
             is AddSoundEvent.OnMessageChanged -> updateMessage(viewEvent.message)

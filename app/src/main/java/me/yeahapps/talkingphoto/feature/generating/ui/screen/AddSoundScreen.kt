@@ -76,7 +76,7 @@ fun AddSoundContainer(
     modifier: Modifier = Modifier,
     viewModel: AddSoundViewModel = hiltViewModel(),
     navigateUp: () -> Unit,
-    startGenerating: (audioScript: String?, audioUri: String, imageUri: String) -> Unit
+    startGenerating: (audioScript: String?, audioUri: String?, imageUri: String) -> Unit
 ) {
     val context = LocalContext.current
     val exoPlayer = remember {
@@ -95,7 +95,7 @@ fun AddSoundContainer(
             AddSoundAction.PauseSound -> exoPlayer.pause()
             AddSoundAction.NavigateUp -> navigateUp()
             AddSoundAction.StartGenerating -> {
-                startGenerating(state.audioScript, state.userAudioUri.toString(), state.userImageUri.toString())
+                startGenerating(state.audioScript, state.userAudioUri?.toString(), state.userImageUri.toString())
             }
 
             null -> {}
