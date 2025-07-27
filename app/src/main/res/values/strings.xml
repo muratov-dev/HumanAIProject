@@ -36,6 +36,7 @@
     </string>
 
     <!--  Avatars  -->
+    <string name="avatars_headline">😏 Avatars</string>
     <string name="avatars_label">Avatars</string>
     <string name="avatars_create">Create Avatar</string>
     <string name="avatars_description">Stylize first and then\nanimate with AI</string>

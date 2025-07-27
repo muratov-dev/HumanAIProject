@@ -9,6 +9,8 @@ import androidx.core.net.toUri
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import me.yeahapps.talkingphoto.core.data.network.api.AvatarApiService
 import me.yeahapps.talkingphoto.feature.avatars.data.local.AvatarsDao
@@ -19,6 +21,7 @@ import me.yeahapps.talkingphoto.feature.avatars.data.model.toDomain
 import me.yeahapps.talkingphoto.feature.avatars.domain.model.UploadAvatarBodyModel
 import me.yeahapps.talkingphoto.feature.avatars.domain.model.UploadUrlBodyModel
 import me.yeahapps.talkingphoto.feature.avatars.domain.repository.AvatarRepository
+import me.yeahapps.talkingphoto.feature.upload.domain.model.UserImageModel
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -42,6 +45,11 @@ class AvatarRepositoryImpl @Inject constructor(
 ) : AvatarRepository {
 
     private var generatedAvatarUrl = ""
+    override fun getAvatars(): Flow<List<UserImageModel>> {
+        return avatarsDao.getAvatars().map { avatars ->
+            avatars.map { UserImageModel(it.id, it.imagePath) }
+        }
+    }
 
     override suspend fun getUploadUrl(imageData: ByteArray): UploadUrlBodyModel? {
         val requestUrl = "https://api.lightxeditor.com/external/api/v2/uploadImageUrl"

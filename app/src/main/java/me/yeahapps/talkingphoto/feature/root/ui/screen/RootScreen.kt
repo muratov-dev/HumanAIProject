@@ -81,7 +81,8 @@ private fun RootContent(
                     modifier = Modifier
                         .commonModifier()
                         .padding(bottom = innerPadding.calculateBottomPadding()),
-                    navigateToPhotoUpload = { parentNavController.navigate(UploadPhotoScreen(UploadType.Avatar)) })
+                    navigateToPhotoUpload = { parentNavController.navigate(UploadPhotoScreen(UploadType.Avatar)) },
+                    navigateToAddSound = { parentNavController.navigate(AddSoundScreen(it)) })
             }
             composable(BottomNavigationItem.MyVideos.route) {
                 VideosContainer(

@@ -36,13 +36,12 @@ class CreatingVideoViewModel @Inject constructor(
 
 
     private fun startCreatingVideo() = viewModelScoped {
-        fun sendError() = {
+
+        val imageUrl = generatingRepository.uploadImage(args.imageUri.toUri())
+        if (imageUrl == null) {
             sendAction(CreatingVideoAction.ShowVideoGeneratingError)
             return@viewModelScoped
         }
-
-        val imageUrl = generatingRepository.uploadImage(args.imageUri.toUri())
-        if (imageUrl == null) sendError()
         updateViewState { copy(isImageUploaded = true, isGeneratingVideo = true) }
 
         startProgressUpdateTimer()
@@ -50,24 +49,36 @@ class CreatingVideoViewModel @Inject constructor(
             generatingRepository.uploadAudio(args.audioUri.toUri())
         } else {
             val generatedAudioPath = args.audioScript?.let { generatingRepository.generateAudio(it) }
-            if (generatedAudioPath == null) sendError()
-            val audioUrl = generatingRepository.uploadAudio(generatedAudioPath!!.toUri())
-            audioUrl
+            if (generatedAudioPath == null) {
+                sendAction(CreatingVideoAction.ShowVideoGeneratingError)
+                return@viewModelScoped
+            }
+            val url = generatingRepository.uploadAudio(generatedAudioPath.toUri())
+            url
         }
-        if (audioUrl == null) sendError()
+        if (audioUrl == null) {
+            sendAction(CreatingVideoAction.ShowVideoGeneratingError)
+            return@viewModelScoped
+        }
 
-        val animateImageId = generatingRepository.animateImage(imageUrl!!, audioUrl!!)
-        if (animateImageId == null) sendError()
+        val animateImageId = generatingRepository.animateImage(imageUrl, audioUrl)
+        if (animateImageId == null) {
+            sendAction(CreatingVideoAction.ShowVideoGeneratingError)
+            return@viewModelScoped
+        }
 
-        val videoPath = generatingRepository.getVideoUrl(animateImageId!!)
-        if (videoPath == null) sendError()
+        val videoPath = generatingRepository.getVideoUrl(animateImageId)
+        if (videoPath == null) {
+            sendAction(CreatingVideoAction.ShowVideoGeneratingError)
+            return@viewModelScoped
+        }
         timer?.cancel()
         timer = null
         val videoId = videosRepository.createVideo(
             VideoModel(
                 title = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")),
                 imageUrl = imageUrl,
-                videoPath = videoPath!!
+                videoPath = videoPath
             )
         )
 

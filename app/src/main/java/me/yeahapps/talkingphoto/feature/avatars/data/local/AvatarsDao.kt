@@ -9,7 +9,7 @@ import me.yeahapps.talkingphoto.feature.avatars.data.model.AvatarEntity
 @Dao
 interface AvatarsDao {
 
-    @Query("select * from uploads")
+    @Query("select * from avatars")
     fun getAvatars(): Flow<List<AvatarEntity>>
 
     @Upsert
