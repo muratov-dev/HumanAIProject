@@ -68,6 +68,12 @@ data class HumanAITypography(
         fontSize = 14.sp,
         lineHeight = 22.sp
     ),
+    val bodySmallBold: TextStyle = TextStyle(
+        fontFamily = robotoFamily,
+        fontWeight = FontWeight.Black,
+        fontSize = 12.sp,
+        lineHeight = 18.sp
+    ),
     val bodySmall: TextStyle = TextStyle(
         fontFamily = robotoFamily,
         fontWeight = FontWeight.Medium,

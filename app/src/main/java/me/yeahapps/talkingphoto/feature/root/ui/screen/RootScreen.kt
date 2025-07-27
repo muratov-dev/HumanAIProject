@@ -33,18 +33,14 @@ object RootScreen
 
 @Composable
 fun RootContainer(
-    modifier: Modifier = Modifier,
-    parentNavController: NavHostController,
-    isFirstLaunch: Boolean = false
+    modifier: Modifier = Modifier, parentNavController: NavHostController, isFirstLaunch: Boolean = false
 ) {
     RootContent(modifier = modifier, parentNavController = parentNavController, isFirstLaunch = isFirstLaunch)
 }
 
 @Composable
 private fun RootContent(
-    modifier: Modifier = Modifier,
-    parentNavController: NavHostController,
-    isFirstLaunch: Boolean = false
+    modifier: Modifier = Modifier, parentNavController: NavHostController, isFirstLaunch: Boolean = false
 ) {
     val items = listOf(
         BottomNavigationItem.Upload,
@@ -90,15 +86,14 @@ private fun RootContent(
                     modifier = Modifier
                         .commonModifier()
                         .padding(bottom = innerPadding.calculateBottomPadding()),
-                    navigateToVideoInfo = { parentNavController.navigate(VideoInfoScreen(it)) }
-                )
+                    navigateToVideoInfo = { parentNavController.navigate(VideoInfoScreen(it)) })
             }
             composable(BottomNavigationItem.Settings.route) {
                 SettingsContainer(
                     modifier = Modifier
                         .commonModifier()
                         .padding(bottom = innerPadding.calculateBottomPadding()),
-                    navigateToSubscriptions = {},
+                    navigateToSubscriptions = { isSubscriptionsScreenVisible = true },
                     navigateToMyVideos = { navController.navigate(BottomNavigationItem.MyVideos.route) })
             }
         }

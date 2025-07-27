@@ -29,7 +29,7 @@ fun SubscriptionItem(
     onClick: () -> Unit
 ) {
     val selectedBackgroundColor = HumanAITheme.colors.buttonPrimaryDefault.copy(alpha = 0.1f)
-    val unselectedBackgroundColor = Color(0xFF0E0C18)
+    val unselectedBackgroundColor = Color(0x00FFFFFF)
     val backgroundColor = if (selected) selectedBackgroundColor else unselectedBackgroundColor
 
     val selectedBorderColor = HumanAITheme.colors.buttonPrimaryDefault
@@ -53,7 +53,7 @@ fun SubscriptionItem(
             Text(
                 text = "${it}% OFF",
                 color = Color.White,
-                style = HumanAITheme.typography.titleBold,
+                style = HumanAITheme.typography.bodySmallBold,
                 modifier = Modifier
                     .padding(horizontal = 24.dp)
                     .background(color = Color(0xFFF34949), RoundedCornerShape(100.dp))

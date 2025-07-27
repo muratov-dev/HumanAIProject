@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -82,7 +83,7 @@ private fun OnboardingContent(
                     1 -> R.drawable.im_onboarding_2
                     else -> R.drawable.im_onboarding_1
                 }
-            ), contentDescription = null
+            ), contentScale = ContentScale.FillWidth, contentDescription = null, modifier = Modifier.fillMaxWidth()
         )
         Column(
             modifier = Modifier

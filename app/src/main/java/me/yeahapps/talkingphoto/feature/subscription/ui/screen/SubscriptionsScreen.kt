@@ -282,10 +282,7 @@ private fun SubscriptionsContent(
                 .padding(16.dp)
                 .size(40.dp)
                 .align(Alignment.TopStart),
-            colors = HumanAIIconButtonDefaults.colors(
-                containerColor = HumanAITheme.colors.backgroundSecondary,
-                contentColor = HumanAITheme.colors.buttonTextPrimary
-            ),
+            colors = HumanAIIconButtonDefaults.colors(containerColor = Color.Transparent, contentColor = Color.White),
             onClick = { onEvent(SubscriptionsEvent.CloseScreen) })
     }
 }
