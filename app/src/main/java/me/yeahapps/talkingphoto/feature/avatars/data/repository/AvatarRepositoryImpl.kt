@@ -1,10 +1,18 @@
 package me.yeahapps.talkingphoto.feature.avatars.data.repository
 
+import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
+import android.os.Environment
+import android.provider.MediaStore
+import androidx.core.net.toUri
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import me.yeahapps.talkingphoto.core.data.network.api.AvatarApiService
+import me.yeahapps.talkingphoto.feature.avatars.data.local.AvatarsDao
+import me.yeahapps.talkingphoto.feature.avatars.data.model.AvatarEntity
 import me.yeahapps.talkingphoto.feature.avatars.data.model.UploadAvatarRequestDto
 import me.yeahapps.talkingphoto.feature.avatars.data.model.UploadUrlRequestDto
 import me.yeahapps.talkingphoto.feature.avatars.data.model.toDomain
@@ -12,10 +20,12 @@ import me.yeahapps.talkingphoto.feature.avatars.domain.model.UploadAvatarBodyMod
 import me.yeahapps.talkingphoto.feature.avatars.domain.model.UploadUrlBodyModel
 import me.yeahapps.talkingphoto.feature.avatars.domain.repository.AvatarRepository
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import timber.log.Timber
 import java.io.File
+import java.io.FileOutputStream
 import javax.inject.Inject
 
 sealed class LightXError : Exception() {
@@ -27,8 +37,11 @@ sealed class LightXError : Exception() {
 
 class AvatarRepositoryImpl @Inject constructor(
     @param:ApplicationContext private val context: Context,
-    private val avatarApiService: AvatarApiService
+    private val avatarApiService: AvatarApiService,
+    private val avatarsDao: AvatarsDao
 ) : AvatarRepository {
+
+    private var generatedAvatarUrl = ""
 
     override suspend fun getUploadUrl(imageData: ByteArray): UploadUrlBodyModel? {
         val requestUrl = "https://api.lightxeditor.com/external/api/v2/uploadImageUrl"
@@ -101,6 +114,7 @@ class AvatarRepositoryImpl @Inject constructor(
             println("Статус: $status, Результат URL: ${resultUrl ?: "-"}")
 
             if (status == "active") {
+                generatedAvatarUrl = resultUrl ?: ""
                 return resultUrl ?: throw LightXError.InvalidResponse()
             }
             if (status == "failed") {
@@ -110,6 +124,89 @@ class AvatarRepositoryImpl @Inject constructor(
         }
         throw LightXError.ApiError(408, "Превышено время ожидания результата")
     }
+
+
+    override suspend fun saveAvatar(avatarUrl: String?): Uri? {
+        val avatarFile = savePhotoFromUrl(avatarUrl ?: return null, "avatar.jpg")
+        avatarsDao.saveAvatar(AvatarEntity(avatarFile?.absolutePath ?: return null))
+        return avatarFile.absolutePath.toUri()
+    }
+
+    override suspend fun saveAvatarToGallery(): Boolean {
+        return saveImageToGallery(generatedAvatarUrl, "avatar.jpg")
+    }
+
+    suspend fun savePhotoFromUrl(url: String, fileName: String): File? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val request = Request.Builder().url(url).build()
+                val response = OkHttpClient().newCall(request).execute()
+
+                if (!response.isSuccessful) return@withContext null
+
+                val body = response.body ?: return@withContext null
+                val inputStream = body.byteStream()
+
+                val file = File(context.filesDir, fileName)
+
+                FileOutputStream(file).use { output ->
+                    inputStream.use { input ->
+                        input.copyTo(output)
+                    }
+                }
+
+                file
+            } catch (e: Exception) {
+                Timber.e(e)
+                null
+            }
+        }
+    }
+
+    suspend fun saveImageToGallery(url: String, displayName: String): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                val request = Request.Builder().url(url).build()
+                val response = OkHttpClient().newCall(request).execute()
+
+                if (!response.isSuccessful) {
+                    Timber.e("Ошибка загрузки: ${response.code}")
+                    return@withContext false
+                }
+
+                val body = response.body ?: return@withContext false
+                val inputStream = body.byteStream()
+
+                val resolver = context.contentResolver
+                val imageCollection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+
+                val values = ContentValues().apply {
+                    put(MediaStore.Images.Media.DISPLAY_NAME, displayName)
+                    put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg") // или "image/png"
+                    put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
+                    put(MediaStore.Images.Media.IS_PENDING, 1)
+                }
+
+                val uri = resolver.insert(imageCollection, values) ?: return@withContext false
+
+                resolver.openOutputStream(uri)?.use { outputStream ->
+                    inputStream.use { input ->
+                        input.copyTo(outputStream)
+                    }
+                }
+
+                values.clear()
+                values.put(MediaStore.Images.Media.IS_PENDING, 0)
+                resolver.update(uri, values, null, null)
+
+                true
+            } catch (e: Exception) {
+                Timber.e(e, "Ошибка при загрузке и сохранении изображения")
+                false
+            }
+        }
+    }
+
 
     suspend fun checkOrderStatus(orderId: String): Pair<String, String?> {
         val requestBody = mapOf("orderId" to orderId)

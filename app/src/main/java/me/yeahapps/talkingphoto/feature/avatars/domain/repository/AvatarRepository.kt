@@ -11,4 +11,7 @@ interface AvatarRepository {
     suspend fun generateCartoon(imageUrl: String, prompt: String): UploadAvatarBodyModel?
 
     suspend fun waitForResult(orderId: String): String
+
+    suspend fun saveAvatar(avatarUrl: String?): Uri?
+    suspend fun saveAvatarToGallery(): Boolean
 }

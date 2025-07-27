@@ -31,6 +31,9 @@ class TransformViewModel @Inject constructor(
                 updateViewState { copy(selectedStyle = viewEvent.style) }
                 generateAvatar(viewEvent.style.styleName)
             }
+
+            TransformEvent.SaveAvatar -> saveAvatar()
+            TransformEvent.SaveToGallery -> viewModelScoped { repository.saveAvatarToGallery() }
         }
     }
 
@@ -39,6 +42,7 @@ class TransformViewModel @Inject constructor(
     }
 
     fun generateAvatar(stylePrompt: String) = viewModelScoped {
+        updateViewState { copy(isLoading = true, canContinue = false) }
         val imageBytes = currentState.userImageUri?.toByteArray(context) ?: return@viewModelScoped
         val uploadUrl = repository.getUploadUrl(imageBytes) ?: return@viewModelScoped
         Timber.d(uploadUrl.uploadImage)
@@ -47,8 +51,16 @@ class TransformViewModel @Inject constructor(
             val image = repository.generateCartoon(uploadUrl.imageUrl, stylePrompt)
             val result = image?.let { repository.waitForResult(it.orderId) }
             Timber.d(result)
+            updateViewState { copy(avatarUrl = result, isLoading = false, canContinue = true) }
         }.onFailure {
+            updateViewState { copy(isLoading = false) }
             Timber.e(it)
         }
+    }
+
+    private fun saveAvatar() = viewModelScoped {
+        updateViewState { copy(canContinue = false) }
+        val avatarUri = repository.saveAvatar(currentState.avatarUrl)
+        avatarUri?.let { sendAction(TransformAction.NavigateToGenerating(it)) }
     }
 }

@@ -4,5 +4,7 @@ import me.yeahapps.talkingphoto.feature.avatars.domain.ImageStyle
 
 sealed interface TransformEvent {
 
+    data object SaveAvatar : TransformEvent
+    data object SaveToGallery : TransformEvent
     data class OnStyleSelected(val style: ImageStyle) : TransformEvent
 }

@@ -9,5 +9,5 @@ interface UploadRepository {
     suspend fun saveUser()
 
     fun getUploadPhotos(): Flow<List<UserImageModel>>
-    suspend fun saveUploadPhoto(imagePath: Uri): String?
+    suspend fun saveUploadPhoto(imagePath: Uri, shouldSaveToDb: Boolean = false): String?
 }

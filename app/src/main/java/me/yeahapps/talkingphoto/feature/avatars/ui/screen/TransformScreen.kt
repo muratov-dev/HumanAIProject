@@ -1,7 +1,9 @@
 package me.yeahapps.talkingphoto.feature.avatars.ui.screen
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -28,14 +32,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.SubcomposeAsyncImage
 import kotlinx.serialization.Serializable
 import me.yeahapps.talkingphoto.R
 import me.yeahapps.talkingphoto.core.ui.component.button.filled.HumanAIPrimaryButton
 import me.yeahapps.talkingphoto.core.ui.component.button.icons.HumanAIIconButton
 import me.yeahapps.talkingphoto.core.ui.component.topbar.HumanAISecondaryTopBar
 import me.yeahapps.talkingphoto.core.ui.theme.HumanAITheme
+import me.yeahapps.talkingphoto.core.ui.utils.collectFlowWithLifecycle
 import me.yeahapps.talkingphoto.core.ui.utils.toPainter
 import me.yeahapps.talkingphoto.feature.avatars.domain.ImageStyle
+import me.yeahapps.talkingphoto.feature.avatars.ui.action.TransformAction
 import me.yeahapps.talkingphoto.feature.avatars.ui.component.ImageStyleCard
 import me.yeahapps.talkingphoto.feature.avatars.ui.event.TransformEvent
 import me.yeahapps.talkingphoto.feature.avatars.ui.state.TransformState
@@ -45,8 +52,18 @@ import me.yeahapps.talkingphoto.feature.avatars.ui.viewmodel.TransformViewModel
 class TransformScreen(val imageUri: String)
 
 @Composable
-fun TransformContainer(modifier: Modifier = Modifier, viewModel: TransformViewModel = hiltViewModel()) {
+fun TransformContainer(
+    modifier: Modifier = Modifier,
+    viewModel: TransformViewModel = hiltViewModel(),
+    navigateToGenerating: (String) -> Unit
+) {
     val state by viewModel.viewState.collectAsStateWithLifecycle()
+    viewModel.viewActions.collectFlowWithLifecycle { action ->
+        when (action) {
+            is TransformAction.NavigateToGenerating -> navigateToGenerating(action.avatarUri.toString())
+            null -> {}
+        }
+    }
     TransformContent(
         modifier = modifier, state = state, onEvent = remember { { event -> viewModel.obtainEvent(event) } })
 }
@@ -59,7 +76,14 @@ private fun TransformContent(
     Scaffold(modifier = modifier, topBar = {
         HumanAISecondaryTopBar(
             title = stringResource(R.string.transform_headline),
-            navigationIcon = { HumanAIIconButton(icon = R.drawable.ic_arrow_back) })
+            navigationIcon = { HumanAIIconButton(icon = R.drawable.ic_arrow_back) },
+            actions = {
+                state.avatarUrl?.let {
+                    HumanAIIconButton(icon = R.drawable.ic_save) {
+                        onEvent(TransformEvent.SaveToGallery)
+                    }
+                }
+            })
     }) { innerPadding ->
         Column(
             modifier = Modifier
@@ -68,16 +92,28 @@ private fun TransformContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(Modifier.size(40.dp))
-            state.userImageUri?.let {
-                Image(
-                    painter = it.toPainter(context),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxWidth(0.65f)
-                        .aspectRatio(1f)
-                        .clip(RoundedCornerShape(32.dp))
-                )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.65f)
+                    .aspectRatio(1f)
+                    .clip(RoundedCornerShape(32.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                state.avatarUrl?.let {
+                    SubcomposeAsyncImage(
+                        model = it,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.matchParentSize()
+                    )
+                } ?: state.userImageUri?.let {
+                    Image(
+                        painter = it.toPainter(context),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.matchParentSize()
+                    )
+                }
             }
             Column(
                 modifier = Modifier.weight(1f),
@@ -104,12 +140,22 @@ private fun TransformContent(
             }
             HumanAIPrimaryButton(
                 centerContent = stringResource(R.string.transform_create),
-                onClick = {},
+                onClick = { onEvent(TransformEvent.SaveAvatar) },
                 enabled = state.canContinue,
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth()
             )
+        }
+    }
+    if (state.isLoading) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.4f)),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
         }
     }
 }

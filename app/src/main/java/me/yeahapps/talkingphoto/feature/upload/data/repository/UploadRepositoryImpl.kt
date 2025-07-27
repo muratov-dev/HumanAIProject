@@ -48,10 +48,11 @@ class UploadRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun saveUploadPhoto(imagePath: Uri): String? {
+    override suspend fun saveUploadPhoto(imagePath: Uri, shouldSaveToDb: Boolean): String? {
         val name = LocalDateTime.now().toString()
         val imagePath = savePhotoSilently(imagePath, "$name.jpg") ?: return null
-        uploadDao.saveUpload(UploadEntity(imagePath = imagePath.absolutePath))
+        if (shouldSaveToDb) uploadDao.saveUpload(UploadEntity(imagePath = imagePath.absolutePath))
+
         return imagePath.absolutePath
     }
 

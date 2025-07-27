@@ -28,4 +28,8 @@ object DatabaseModule {
     @Singleton
     @Provides
     fun provideUploadDao(database: HumanAIDatabase) = database.uploadDao()
+
+    @Singleton
+    @Provides
+    fun provideAvatarsDao(database: HumanAIDatabase) = database.avatarsDao()
 }

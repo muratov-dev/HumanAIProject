@@ -60,7 +60,8 @@ fun HumanAINavHost(
             TransformContainer(
                 modifier = Modifier
                     .commonModifier()
-                    .systemBarsPadding()
+                    .systemBarsPadding(),
+                navigateToGenerating = { navController.navigate(AddSoundScreen(it))}
             )
         }
 
