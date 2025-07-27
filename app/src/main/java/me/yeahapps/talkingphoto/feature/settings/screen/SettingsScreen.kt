@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -33,8 +34,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.yeahapps.talkingphoto.R
 import me.yeahapps.talkingphoto.core.ui.component.topbar.HumanAIPrimaryTopBar
 import me.yeahapps.talkingphoto.core.ui.utils.collectFlowWithLifecycle
-import me.yeahapps.talkingphoto.feature.settings.component.SettingsButton
 import me.yeahapps.talkingphoto.feature.settings.action.SettingsAction
+import me.yeahapps.talkingphoto.feature.settings.component.SettingsButton
 import me.yeahapps.talkingphoto.feature.settings.event.SettingsEvent
 import me.yeahapps.talkingphoto.feature.settings.state.SettingsState
 import me.yeahapps.talkingphoto.feature.settings.viewmodel.SettingsViewModel
@@ -54,6 +55,11 @@ fun SettingsContainer(
             null -> {}
         }
     }
+
+    LaunchedEffect(Unit) {
+        viewModel.obtainEvent(SettingsEvent.GetVideosCount)
+    }
+
     SettingsContent(
         modifier = modifier, state = state, onEvent = remember { { event -> viewModel.obtainEvent(event) } })
 }
