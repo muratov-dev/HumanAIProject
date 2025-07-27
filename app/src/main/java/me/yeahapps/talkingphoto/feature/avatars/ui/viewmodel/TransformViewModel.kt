@@ -29,7 +29,7 @@ class TransformViewModel @Inject constructor(
         when (viewEvent) {
             is TransformEvent.OnStyleSelected -> {
                 updateViewState { copy(selectedStyle = viewEvent.style) }
-                generateAvatar(viewEvent.style.styleName)
+                generateAvatar(viewEvent.style.propmt)
             }
 
             TransformEvent.SaveAvatar -> saveAvatar()

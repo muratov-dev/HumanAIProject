@@ -9,7 +9,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import me.yeahapps.talkingphoto.core.ui.viewmodel.BaseViewModel
 import me.yeahapps.talkingphoto.feature.generating.data.media.AudioRecorder
-import me.yeahapps.talkingphoto.feature.generating.domain.repository.GeneratingRepository
 import me.yeahapps.talkingphoto.feature.generating.ui.action.AddSoundAction
 import me.yeahapps.talkingphoto.feature.generating.ui.event.AddSoundEvent
 import me.yeahapps.talkingphoto.feature.generating.ui.screen.AddSoundScreen
@@ -82,12 +81,13 @@ class AddSoundViewModel @Inject constructor(
         audioRecordingJob = null
     }
 
-    private fun startGenerating(){
+    private fun startGenerating() = viewModelScoped {
         updateViewState { copy(isRecording = false) }
         audioRecorder.stopRecording()
         updateViewState { copy(userAudioUri = audioRecorder.outputFile?.toUri()) }
         audioRecordingJob?.cancel()
         audioRecordingJob = null
+        delay(1000)
         sendAction(AddSoundAction.StartGenerating)
     }
 

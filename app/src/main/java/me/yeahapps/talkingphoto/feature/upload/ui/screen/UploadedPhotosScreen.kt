@@ -24,11 +24,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import me.yeahapps.talkingphoto.R
@@ -41,15 +41,21 @@ import me.yeahapps.talkingphoto.feature.upload.ui.component.cards.UploadedPhotoC
 import me.yeahapps.talkingphoto.feature.upload.ui.event.UploadedPhotosEvent
 import me.yeahapps.talkingphoto.feature.upload.ui.state.UploadedPhotosState
 import me.yeahapps.talkingphoto.feature.upload.ui.viewmodel.UploadedPhotosViewModel
+import okio.Path.Companion.toPath
+import java.io.File
 
 @Composable
 fun UploadedPhotosContainer(
-    modifier: Modifier = Modifier, viewModel: UploadedPhotosViewModel = hiltViewModel(), navigateToUpload: () -> Unit
+    modifier: Modifier = Modifier,
+    viewModel: UploadedPhotosViewModel = hiltViewModel(),
+    navigateToUpload: () -> Unit,
+    navigateToAddSound: (String) -> Unit
 ) {
     val state by viewModel.viewState.collectAsStateWithLifecycle()
     viewModel.viewActions.collectFlowWithLifecycle { action ->
         when (action) {
             is UploadedPhotosAction.NavigateToPhotoUpload -> navigateToUpload()
+            is UploadedPhotosAction.NavigateToSoundScreen -> navigateToAddSound(action.photoPath)
             null -> {}
         }
     }
@@ -85,12 +91,15 @@ private fun UploadedPhotosContent(
                     UploadedPhotoCard { onEvent(UploadedPhotosEvent.NavigateToPhotoUpload) }
                 }
                 items(state.photos) { photo ->
-                    UploadedPhotoCard(photo = photo, onClick = {})
+                    UploadedPhotoCard(
+                        context = context,
+                        photo = photo,
+                        onClick = { onEvent(UploadedPhotosEvent.NavigateToSoundScreen(it)) })
                 }
             }
             HumanAIPrimaryButton(
                 centerContent = stringResource(R.string.upload_main_button),
-                onClick = {},
+                onClick = { onEvent(UploadedPhotosEvent.NavigateToPhotoUpload) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)
@@ -100,16 +109,23 @@ private fun UploadedPhotosContent(
 }
 
 @Composable
-fun UploadedPhotoCard(modifier: Modifier = Modifier, photo: UserImageModel, onClick: () -> Unit) {
+fun UploadedPhotoCard(
+    modifier: Modifier = Modifier, context: Context, photo: UserImageModel, onClick: (String) -> Unit
+) {
     val bitmap = remember(photo.imagePath) {
         BitmapFactory.decodeFile(photo.imagePath)
     }
+
+    val file = File(context.filesDir, photo.imagePath.toPath().name)
+    val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
+
     Box(
         modifier = modifier
             .aspectRatio(1f / 1.22f)
             .clip(RoundedCornerShape(32.dp))
             .background(color = Color(0xFF131238))
-            .clickable(onClick = onClick), contentAlignment = Alignment.Center
+            .clickable(onClick = { onClick(uri.toString()) }),
+        contentAlignment = Alignment.Center
     ) {
         bitmap?.let {
             Image(

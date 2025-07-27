@@ -1,7 +1,9 @@
 package me.yeahapps.talkingphoto.feature.videos.ui.screen
 
+import android.widget.Toast
 import androidx.annotation.OptIn
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,11 +13,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
@@ -106,12 +112,14 @@ private fun VideoInfoContent(
     val hazeState = rememberHazeState(true)
     val hazeStyle = HazeStyle(blurRadius = 75.dp, tint = HazeTint(Color(0x0D000000)))
 
+    var isDeleteDialogVisible by remember { mutableStateOf(false) }
+
     Scaffold(modifier = modifier, topBar = {
         HumanAISecondaryTopBar(title = stringResource(R.string.common_share), navigationIcon = {
             HumanAIIconButton(
                 icon = R.drawable.ic_delete,
                 colors = HumanAIIconButtonDefaults.colors().copy(contentColor = HumanAITheme.colors.error),
-                onClick = { onEvent(VideoInfoEvent.DeleteWork) })
+                onClick = { isDeleteDialogVisible = true })
         }, actions = {
             HumanAIIconButton(
                 icon = R.drawable.ic_cancel_circle,
@@ -165,7 +173,10 @@ private fun VideoInfoContent(
                     centerContent = stringResource(R.string.common_save),
                     icon = R.drawable.ic_save,
                     modifier = Modifier.weight(1f),
-                    onClick = { onEvent(VideoInfoEvent.SaveToGallery) })
+                    onClick = {
+                        onEvent(VideoInfoEvent.SaveToGallery)
+                        Toast.makeText(context, "Saved to Gallery", Toast.LENGTH_SHORT).show()
+                    })
                 Spacer(Modifier.size(16.dp))
                 HumanAISecondaryButton(
                     centerContent = stringResource(R.string.common_share),
@@ -175,5 +186,31 @@ private fun VideoInfoContent(
             }
             Spacer(Modifier.size(40.dp))
         }
+    }
+
+    if (isDeleteDialogVisible) {
+        AlertDialog(title = {
+            Text(
+                text = "Delete video?",
+                style = HumanAITheme.typography.titleMedium,
+                color = HumanAITheme.colors.textPrimary
+            )
+        }, text = {
+            Text(
+                text = "Are you sure you want to delete this video?",
+                style = HumanAITheme.typography.bodyMedium,
+                color = HumanAITheme.colors.textPrimary
+            )
+        }, onDismissRequest = {
+            isDeleteDialogVisible = false
+        }, dismissButton = {
+            Box(modifier = Modifier.clickable { isDeleteDialogVisible = false }) {
+                Text(text = "Cancel", color = HumanAITheme.colors.textPrimary)
+            }
+        }, confirmButton = {
+            Box(modifier = Modifier.clickable { onEvent(VideoInfoEvent.DeleteWork) }) {
+                Text(text = "Delete", color = HumanAITheme.colors.textPrimary)
+            }
+        })
     }
 }

@@ -17,6 +17,7 @@ class UploadedPhotosViewModel @Inject constructor(
     override fun obtainEvent(viewEvent: UploadedPhotosEvent) {
         when (viewEvent) {
             UploadedPhotosEvent.NavigateToPhotoUpload -> sendAction(UploadedPhotosAction.NavigateToPhotoUpload)
+            is UploadedPhotosEvent.NavigateToSoundScreen -> sendAction(UploadedPhotosAction.NavigateToSoundScreen(viewEvent.photoPath))
         }
     }
 

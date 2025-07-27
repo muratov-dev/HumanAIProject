@@ -18,6 +18,7 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.serialization.Serializable
 import me.yeahapps.talkingphoto.core.ui.navigation.commonModifier
 import me.yeahapps.talkingphoto.feature.avatars.ui.screen.AvatarsContainer
+import me.yeahapps.talkingphoto.feature.generating.ui.screen.AddSoundScreen
 import me.yeahapps.talkingphoto.feature.root.domain.BottomNavigationItem
 import me.yeahapps.talkingphoto.feature.root.ui.component.HumanAIBottomNavigation
 import me.yeahapps.talkingphoto.feature.settings.screen.SettingsContainer
@@ -72,7 +73,8 @@ private fun RootContent(
                     modifier = Modifier
                         .commonModifier()
                         .padding(bottom = innerPadding.calculateBottomPadding()),
-                    navigateToUpload = { parentNavController.navigate(UploadPhotoScreen(UploadType.Upload)) })
+                    navigateToUpload = { parentNavController.navigate(UploadPhotoScreen(UploadType.Upload)) },
+                    navigateToAddSound = { parentNavController.navigate(AddSoundScreen(it)) })
             }
             composable(BottomNavigationItem.Avatars.route) {
                 AvatarsContainer(

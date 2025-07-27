@@ -3,7 +3,6 @@ package me.yeahapps.talkingphoto.feature.generating.ui.screen
 import android.Manifest
 import android.content.Context
 import android.widget.Toast
-import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -15,9 +14,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -44,13 +45,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import kotlinx.serialization.Serializable
 import me.yeahapps.talkingphoto.R
@@ -78,6 +82,7 @@ fun AddSoundContainer(
     navigateUp: () -> Unit,
     startGenerating: (audioScript: String?, audioUri: String?, imageUri: String) -> Unit
 ) {
+
     val context = LocalContext.current
     val exoPlayer = remember {
         ExoPlayer.Builder(context).build().apply {
@@ -85,6 +90,12 @@ fun AddSoundContainer(
             prepare()
         }
     }
+
+    exoPlayer.addListener(object : Player.Listener {
+        override fun onPlaybackStateChanged(playbackState: Int) {
+            if (playbackState == Player.STATE_ENDED) viewModel.obtainEvent(AddSoundEvent.PauseSound)
+        }
+    })
 
 
     val state by viewModel.viewState.collectAsStateWithLifecycle()
@@ -122,8 +133,10 @@ private fun AddSoundContent(
     state: AddSoundState = AddSoundState(),
     onEvent: (AddSoundEvent) -> Unit = {}
 ) {
+    val insets = WindowInsets.ime
+    val imeVisible = insets.getBottom(LocalDensity.current) > 0
 
-    val activity = LocalActivity.current
+    val scale = if (imeVisible) 0.5f else 1f
 
     val options = listOf("Script", "Record")
     val icons = listOf(R.drawable.ic_script, R.drawable.ic_record)
@@ -144,10 +157,12 @@ private fun AddSoundContent(
     }
 
     Scaffold(
-        modifier = modifier.imePadding(), topBar = {
+        modifier = modifier,
+        topBar = {
             HumanAISecondaryTopBar(
-                title = stringResource(R.string.add_sound_title),
-                navigationIcon = { HumanAIIconButton(icon = R.drawable.ic_arrow_back) })
+                title = stringResource(R.string.add_sound_title), navigationIcon = {
+                    HumanAIIconButton(icon = R.drawable.ic_arrow_back, onClick = { onEvent(AddSoundEvent.NavigateUp) })
+                })
         }) { innerPadding ->
         Column(
             modifier = Modifier
@@ -190,7 +205,7 @@ private fun AddSoundContent(
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .fillMaxWidth(0.65f)
+                        .fillMaxWidth(0.65f * scale)
                         .aspectRatio(1f)
                         .clip(RoundedCornerShape(32.dp))
                 )
@@ -251,9 +266,14 @@ private fun MessageControls(
                 .padding(8.dp)
         ) {
             BasicTextField(
-                value = message, onValueChange = onMessageChange, modifier = Modifier
+                value = message,
+                onValueChange = onMessageChange,
+                modifier = Modifier
                     .weight(1f)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                textStyle = HumanAITheme.typography.bodyRegular.copy(
+                    fontWeight = FontWeight.Medium, color = Color.White
+                )
             )
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(text = "${message.length}/400")
@@ -334,9 +354,7 @@ private fun SoundRecordControls(
                     icon = if (isRecording) R.drawable.ic_stop else R.drawable.ic_mic,
                     onClick = { if (isRecording) onStop() else onRecord() })
                 SoundControlsIconButton(
-                    icon = R.drawable.ic_arrow_right,
-                    enabled = isDoneButtonEnabled,
-                    onClick = onDone
+                    icon = R.drawable.ic_arrow_right, enabled = isDoneButtonEnabled, onClick = onDone
                 )
             }
         }
