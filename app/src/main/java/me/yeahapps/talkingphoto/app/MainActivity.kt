@@ -41,10 +41,6 @@ class MainActivity : ComponentActivity() {
                     startDestination = if (isFirstLaunch) OnboardingScreen else RootScreen,
                     isFirstLaunch = isFirstLaunch,
                 )
-                var showDialog by remember { mutableStateOf(true) }
-                if (!isFirstLaunch) {
-                    RequestInAppReview(showDialog, onDismiss = { showDialog = false }, context = LocalContext.current)
-                }
             }
         }
     }

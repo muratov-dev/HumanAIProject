@@ -1,6 +1,6 @@
 <resources>
     <!--  Common  -->
-    <string name="app_name">HumanAIProject</string>
+    <string name="app_name">Dream Face AI</string>
     <string name="common_done">Done</string>
     <string name="common_next">Next</string>
     <string name="common_try">Try It Now!</string>

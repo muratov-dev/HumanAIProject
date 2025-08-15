@@ -17,12 +17,16 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -35,6 +39,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.serialization.Serializable
 import me.yeahapps.talkingphoto.R
+import me.yeahapps.talkingphoto.core.ui.component.RequestInAppReview
 import me.yeahapps.talkingphoto.core.ui.component.button.filled.HumanAIPrimaryButton
 import me.yeahapps.talkingphoto.core.ui.theme.HumanAITheme
 import me.yeahapps.talkingphoto.core.ui.utils.collectFlowWithLifecycle
@@ -69,6 +74,11 @@ fun OnboardingContainer(
 private fun OnboardingContent(
     modifier: Modifier = Modifier, state: OnboardingState = OnboardingState(), onEvent: (OnboardingEvent) -> Unit = {}
 ) {
+    var showDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(state.slideIndex) {
+        if (state.slideIndex == 1) showDialog = true
+    }
 
     BackHandler {
         onEvent(OnboardingEvent.ShowPreviousSlide)
@@ -155,4 +165,6 @@ private fun OnboardingContent(
             Spacer(Modifier.size(if (state.slideIndex == 1) 20.dp else 40.dp))
         }
     }
+
+    RequestInAppReview(showDialog, onDismiss = { showDialog = false }, context = LocalContext.current)
 }
