@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalTextStyle
@@ -51,8 +50,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.android.billingclient.api.ProductDetails
 import me.yeahapps.talkingphoto.R
 import me.yeahapps.talkingphoto.core.ui.component.button.filled.HumanAIPrimaryButton
-import me.yeahapps.talkingphoto.core.ui.component.button.icons.HumanAIIconButton
-import me.yeahapps.talkingphoto.core.ui.component.button.icons.HumanAIIconButtonDefaults
 import me.yeahapps.talkingphoto.core.ui.theme.HumanAITheme
 import me.yeahapps.talkingphoto.core.ui.utils.collectFlowWithLifecycle
 import me.yeahapps.talkingphoto.feature.subscription.ui.action.SubscriptionsAction
@@ -271,19 +268,14 @@ private fun SubscriptionsContent(
                     Text(text = policyText)
                     Text(text = "|")
                     Text(text = termsText)
+                    Text(text = "|")
+                    Text(text = "Limited Version", modifier = Modifier.clickable {
+                        onEvent(SubscriptionsEvent.CloseScreen)
+                    })
                 }
             }
             Spacer(Modifier.size(16.dp))
         }
-        HumanAIIconButton(
-            icon = R.drawable.ic_cancel_circle,
-            modifier = Modifier
-                .statusBarsPadding()
-                .padding(16.dp)
-                .size(40.dp)
-                .align(Alignment.TopStart),
-            colors = HumanAIIconButtonDefaults.colors(containerColor = Color.Transparent, contentColor = Color.White),
-            onClick = { onEvent(SubscriptionsEvent.CloseScreen) })
     }
 }
 
