@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -52,6 +51,7 @@ import me.yeahapps.talkingphoto.R
 import me.yeahapps.talkingphoto.core.ui.component.button.filled.HumanAIPrimaryButton
 import me.yeahapps.talkingphoto.core.ui.theme.HumanAITheme
 import me.yeahapps.talkingphoto.core.ui.utils.collectFlowWithLifecycle
+import me.yeahapps.talkingphoto.feature.subscription.domain.utils.toSubscriptionModel
 import me.yeahapps.talkingphoto.feature.subscription.ui.action.SubscriptionsAction
 import me.yeahapps.talkingphoto.feature.subscription.ui.component.SubscriptionItem
 import me.yeahapps.talkingphoto.feature.subscription.ui.event.SubscriptionsEvent
@@ -93,11 +93,11 @@ private fun SubscriptionsContent(
 ) {
     val activity = LocalActivity.current
     var relativesSubscriptionCount by remember { mutableIntStateOf(0) }
-    Box(modifier = modifier.navigationBarsPadding()) {
+    Column(modifier = modifier.navigationBarsPadding()) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.5f)
+                .fillMaxHeight(0.4f)
         ) {
             Image(
                 painter = painterResource(R.drawable.im_onboarding_subscription_bg),
@@ -122,7 +122,6 @@ private fun SubscriptionsContent(
                     })
         }
         Column(
-            modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Bottom),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -131,72 +130,14 @@ private fun SubscriptionsContent(
                 style = HumanAITheme.typography.titleBold,
                 color = HumanAITheme.colors.textPrimary
             )
-            Spacer(Modifier.size(16.dp))
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = 48.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_check_circle),
-                    contentDescription = null,
-                    tint = HumanAITheme.colors.buttonPrimaryDefault,
-                    modifier = Modifier.size(24.dp)
-                )
-                Text(
-                    text = "Unlimited Generate With AI",
-                    textAlign = TextAlign.Start,
-                    style = HumanAITheme.typography.bodyRegular,
-                    color = HumanAITheme.colors.textPrimary
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = 48.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_check_circle),
-                    contentDescription = null,
-                    tint = HumanAITheme.colors.buttonPrimaryDefault,
-                    modifier = Modifier.size(24.dp)
-                )
-                Text(
-                    text = "Pictured Talking And Singing",
-                    textAlign = TextAlign.Start,
-                    style = HumanAITheme.typography.bodyRegular,
-                    color = HumanAITheme.colors.textPrimary
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = 48.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_check_circle),
-                    contentDescription = null,
-                    tint = HumanAITheme.colors.buttonPrimaryDefault,
-                    modifier = Modifier.size(24.dp)
-                )
-                Text(
-                    text = "Faster Rendering",
-                    textAlign = TextAlign.Start,
-                    style = HumanAITheme.typography.bodyRegular,
-                    color = HumanAITheme.colors.textPrimary,
-                    modifier = Modifier.clickable(enabled = relativesSubscriptionCount != 20) {
-                        relativesSubscriptionCount++
-                        if (relativesSubscriptionCount == 20) {
-                            onEvent(SubscriptionsEvent.ActivateRelativesSubscription)
-                        }
-                    })
-            }
+            Spacer(Modifier.size(8.dp))
+            AdvantagesText(text = "Unlimited Generate With AI")
+            AdvantagesText(text = "Pictured Talking And Singing")
+            AdvantagesText(
+                text = "Faster Rendering", modifier = Modifier.clickable(enabled = relativesSubscriptionCount != 20) {
+                    relativesSubscriptionCount++
+                    if (relativesSubscriptionCount == 20) onEvent(SubscriptionsEvent.ActivateRelativesSubscription)
+                })
             Spacer(Modifier.size(16.dp))
             CompositionLocalProvider(LocalContentColor provides HumanAITheme.colors.textPrimary) {
                 if (state.subscriptionsList.isEmpty()) {
@@ -210,30 +151,26 @@ private fun SubscriptionsContent(
                         Text(text = "No subscriptions available", style = HumanAITheme.typography.labelMedium)
                     }
                 } else {
-                    state.subscriptionsList.forEach { product ->
-                        val offer = product.subscriptionOfferDetails?.firstOrNull() ?: return@forEach
-                        val pricePerWeek = getWeeklyPrice(product)
-                        val fullPrice = offer.pricingPhases.pricingPhaseList.firstOrNull()?.formattedPrice ?: "-"
-                        val title = if (getWeeks(product) > 1) "Yearly Access" else "Weekly Access"
-                        val subtitle = if (getWeeks(product) > 1) "Just $fullPrice per year" else "Cancel Anytime"
-
-                        val discount = if (state.subscriptionsList.size == 2 && getWeeks(product) > 1) {
-                            val weekly = state.subscriptionsList.firstOrNull { getWeeks(it) == 1 }
-                            weekly?.let { calculateDiscountPercent(product, it) }
-                        } else null
-
+                    state.subscriptionsList.map {
+                        it.toSubscriptionModel(
+                            allSubscriptions = state.subscriptionsList,
+                            selectedProduct = state.selectedDetails,
+                            getWeeklyPrice = ::getWeeklyPrice,
+                            calculateDiscountPercent = ::calculateDiscountPercent
+                        )
+                    }.forEach { model ->
                         SubscriptionItem(
                             modifier = Modifier.padding(horizontal = 16.dp),
-                            title = title,
-                            subtitle = subtitle,
-                            weeklyPrice = pricePerWeek,
-                            discountPercent = discount,
-                            selected = state.selectedDetails == product,
-                            onClick = { onEvent(SubscriptionsEvent.SelectSubscription(product)) })
+                            title = model.title,
+                            subtitle = model.subtitle,
+                            weeklyPrice = model.weeklyPrice,
+                            discountPercent = model.discountPercent,
+                            selected = model.isSelected,
+                            onClick = { onEvent(SubscriptionsEvent.SelectSubscription(model.product)) })
                     }
                 }
             }
-            Spacer(Modifier.size(24.dp))
+            Spacer(Modifier.size(12.dp))
             Text(
                 text = "Non commitment - cancel anytime",
                 textAlign = TextAlign.Center,
@@ -241,7 +178,7 @@ private fun SubscriptionsContent(
                 color = HumanAITheme.colors.textPrimary.copy(alpha = 0.5f),
                 style = HumanAITheme.typography.bodyRegular
             )
-            Spacer(Modifier.size(16.dp))
+            Spacer(Modifier.size(8.dp))
             HumanAIPrimaryButton(
                 centerContent = stringResource(R.string.common_try),
                 enabled = state.selectedDetails != null,
@@ -252,7 +189,7 @@ private fun SubscriptionsContent(
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth()
             )
-            Spacer(Modifier.size(6.dp))
+            Spacer(Modifier.size(4.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.CenterHorizontally),
@@ -274,8 +211,32 @@ private fun SubscriptionsContent(
                     })
                 }
             }
-            Spacer(Modifier.size(16.dp))
+            Spacer(Modifier.size(8.dp))
         }
+    }
+}
+
+@Composable
+private fun AdvantagesText(modifier: Modifier = Modifier, text: String) {
+    Row(
+        modifier = modifier
+            .padding(horizontal = 48.dp)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Icon(
+            imageVector = ImageVector.vectorResource(id = R.drawable.ic_check_circle),
+            contentDescription = null,
+            tint = HumanAITheme.colors.buttonPrimaryDefault,
+            modifier = Modifier.size(24.dp)
+        )
+        Text(
+            text = text,
+            textAlign = TextAlign.Start,
+            style = HumanAITheme.typography.bodyRegular,
+            color = HumanAITheme.colors.textPrimary
+        )
     }
 }
 
