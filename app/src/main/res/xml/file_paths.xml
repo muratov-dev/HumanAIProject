@@ -14,4 +14,5 @@
     <paths>
         <files-path name="shared_files" path="." />
     </paths>
+    <files-path name="internal" path="." />
 </resources>

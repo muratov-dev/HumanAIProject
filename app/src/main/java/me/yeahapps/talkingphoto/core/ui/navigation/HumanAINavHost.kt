@@ -51,7 +51,7 @@ fun HumanAINavHost(
                 modifier = Modifier
                     .commonModifier()
                     .systemBarsPadding(),
-                navigateUp = {},
+                navigateUp = { navController.navigateUp() },
                 startGenerating = { audioScript, audioUri, imageUri ->
                     navController.navigate(CreatingVideoScreen(audioScript, audioUri, imageUri))
                 })

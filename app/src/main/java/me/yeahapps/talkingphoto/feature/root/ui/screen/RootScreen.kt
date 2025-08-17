@@ -103,6 +103,7 @@ private fun RootContent(
     }
 
     if (isSubscriptionsScreenVisible) {
+        if (isFirstLaunch) isFirstLaunch = false
         SubscriptionsContainer(
             modifier = Modifier
                 .commonModifier()

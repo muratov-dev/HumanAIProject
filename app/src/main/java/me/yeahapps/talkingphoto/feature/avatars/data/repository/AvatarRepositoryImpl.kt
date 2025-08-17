@@ -5,7 +5,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
-import androidx.core.net.toUri
+import androidx.core.content.FileProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -29,6 +29,8 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
+import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 sealed class LightXError : Exception() {
@@ -135,13 +137,14 @@ class AvatarRepositoryImpl @Inject constructor(
 
 
     override suspend fun saveAvatar(avatarUrl: String?): Uri? {
-        val avatarFile = savePhotoFromUrl(avatarUrl ?: return null, "avatar.jpg")
+        val avatarFile = savePhotoFromUrl(avatarUrl ?: return null, "avatar${LocalDateTime.now()}.jpg")
         avatarsDao.saveAvatar(AvatarEntity(avatarFile?.absolutePath ?: return null))
-        return avatarFile.absolutePath.toUri()
+        return FileProvider.getUriForFile(context, "${context.packageName}.provider", avatarFile)
+
     }
 
     override suspend fun saveAvatarToGallery(): Boolean {
-        return saveImageToGallery(generatedAvatarUrl, "avatar.jpg")
+        return saveImageToGallery(generatedAvatarUrl, "avatar${LocalDateTime.now()}.jpg")
     }
 
     suspend fun savePhotoFromUrl(url: String, fileName: String): File? {

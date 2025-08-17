@@ -62,9 +62,9 @@ class TransformViewModel @Inject constructor(
             Timber.d(result)
             updateViewState { copy(canContinue = true, avatarUrl = result) }
         }.onFailure {
-            updateViewState { copy() }
             Timber.e(it)
         }
+        updateViewState { copy(isLoading = false) }
     }
 
     private fun saveAvatar() = viewModelScoped {
