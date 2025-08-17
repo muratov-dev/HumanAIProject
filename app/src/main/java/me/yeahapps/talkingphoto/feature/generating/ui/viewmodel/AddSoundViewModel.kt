@@ -6,7 +6,9 @@ import androidx.navigation.toRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.isActive
+import me.yeahapps.talkingphoto.core.data.BillingManager
 import me.yeahapps.talkingphoto.core.ui.viewmodel.BaseViewModel
 import me.yeahapps.talkingphoto.feature.generating.data.media.AudioRecorder
 import me.yeahapps.talkingphoto.feature.generating.ui.action.AddSoundAction
@@ -19,6 +21,7 @@ import javax.inject.Inject
 class AddSoundViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val audioRecorder: AudioRecorder,
+    private val billingManager: BillingManager
 ) : BaseViewModel<AddSoundState, AddSoundEvent, AddSoundAction>(AddSoundState()) {
 
     val args = savedStateHandle.toRoute<AddSoundScreen>()
@@ -28,12 +31,12 @@ class AddSoundViewModel @Inject constructor(
         when (viewEvent) {
             AddSoundEvent.StartRecording -> startRecording()
             AddSoundEvent.PlaySound -> {
-                updateViewState { copy(isPlaying = true) }
+                updateViewState { copy(isPlaying = true,) }
                 sendAction(AddSoundAction.PlaySound)
             }
 
             AddSoundEvent.PauseSound -> {
-                updateViewState { copy(isPlaying = false) }
+                updateViewState { copy() }
                 sendAction(AddSoundAction.PauseSound)
             }
 
@@ -45,20 +48,25 @@ class AddSoundViewModel @Inject constructor(
             is AddSoundEvent.OnMessageChanged -> updateMessage(viewEvent.message)
             AddSoundEvent.ClearMessageField -> updateMessage("")
 
-            is AddSoundEvent.OnVoiceSelect -> updateViewState { copy(selectedVoice = viewEvent.voiceId) }
+            is AddSoundEvent.OnVoiceSelect -> updateViewState { copy(selectedVoice = viewEvent.voiceId,) }
         }
     }
 
     init {
-        updateViewState { copy(userImageUri = args.imageUri.toUri()) }
+        updateViewState { copy(userImageUri = args.imageUri.toUri(),) }
+        viewModelScoped {
+            billingManager.isSubscribed.collectLatest {
+                updateViewState { copy(hasSubscription = it) }
+            }
+        }
     }
 
     private fun updateMessage(prompt: String) {
-        updateViewState { copy(audioScript = prompt) }
+        updateViewState { copy(audioScript = prompt,) }
     }
 
     private fun startRecording() {
-        updateViewState { copy(isRecording = true, audioDuration = 0L) }
+        updateViewState { copy(isRecording = true,) }
         audioRecorder.startRecording()
         audioRecordingJob = viewModelScoped {
             while (isActive) {
@@ -67,24 +75,24 @@ class AddSoundViewModel @Inject constructor(
                     stopRecording()
                     break
                 }
-                updateViewState { copy(audioDuration = currentDuration) }
+                updateViewState { copy(audioDuration = currentDuration,) }
                 delay(AUDIO_RECORDING_INTERVAL_MS)
             }
         }
     }
 
     private fun stopRecording() {
-        updateViewState { copy(isRecording = false) }
+        updateViewState { copy() }
         audioRecorder.stopRecording()
-        updateViewState { copy(userAudioUri = audioRecorder.outputFile?.toUri()) }
+        updateViewState { copy(userAudioUri = audioRecorder.outputFile?.toUri(),) }
         audioRecordingJob?.cancel()
         audioRecordingJob = null
     }
 
     private fun startGenerating() = viewModelScoped {
-        updateViewState { copy(isRecording = false) }
+        updateViewState { copy() }
         audioRecorder.stopRecording()
-        updateViewState { copy(userAudioUri = audioRecorder.outputFile?.toUri()) }
+        updateViewState { copy(userAudioUri = audioRecorder.outputFile?.toUri(),) }
         audioRecordingJob?.cancel()
         audioRecordingJob = null
         delay(1000)

@@ -6,6 +6,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.collectLatest
+import me.yeahapps.talkingphoto.core.data.BillingManager
 import me.yeahapps.talkingphoto.core.data.network.utils.toByteArray
 import me.yeahapps.talkingphoto.core.ui.viewmodel.BaseViewModel
 import me.yeahapps.talkingphoto.feature.avatars.domain.repository.AvatarRepository
@@ -20,7 +22,8 @@ import javax.inject.Inject
 class TransformViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     @param:ApplicationContext private val context: Context,
-    private val repository: AvatarRepository
+    private val repository: AvatarRepository,
+    private val billingManager: BillingManager
 ) : BaseViewModel<TransformState, TransformEvent, TransformAction>(TransformState()) {
 
     val args = savedStateHandle.toRoute<TransformScreen>()
@@ -32,6 +35,7 @@ class TransformViewModel @Inject constructor(
                 generateAvatar(viewEvent.style.propmt)
             }
 
+            TransformEvent.NavigateUp -> sendAction(TransformAction.NavigateUp)
             TransformEvent.SaveAvatar -> saveAvatar()
             TransformEvent.SaveToGallery -> viewModelScoped { repository.saveAvatarToGallery() }
         }
@@ -39,10 +43,15 @@ class TransformViewModel @Inject constructor(
 
     init {
         updateViewState { copy(userImageUri = args.imageUri.toUri()) }
+        viewModelScoped {
+            billingManager.isSubscribed.collectLatest {
+                updateViewState { copy(hasSubscription = it) }
+            }
+        }
     }
 
     fun generateAvatar(stylePrompt: String) = viewModelScoped {
-        updateViewState { copy(isLoading = true, canContinue = false) }
+        updateViewState { copy(isLoading = true) }
         val imageBytes = currentState.userImageUri?.toByteArray(context) ?: return@viewModelScoped
         val uploadUrl = repository.getUploadUrl(imageBytes) ?: return@viewModelScoped
         Timber.d(uploadUrl.uploadImage)
@@ -51,15 +60,15 @@ class TransformViewModel @Inject constructor(
             val image = repository.generateCartoon(uploadUrl.imageUrl, stylePrompt)
             val result = image?.let { repository.waitForResult(it.orderId) }
             Timber.d(result)
-            updateViewState { copy(avatarUrl = result, isLoading = false, canContinue = true) }
+            updateViewState { copy(canContinue = true, avatarUrl = result) }
         }.onFailure {
-            updateViewState { copy(isLoading = false) }
+            updateViewState { copy() }
             Timber.e(it)
         }
     }
 
     private fun saveAvatar() = viewModelScoped {
-        updateViewState { copy(canContinue = false) }
+        updateViewState { copy() }
         val avatarUri = repository.saveAvatar(currentState.avatarUrl)
         avatarUri?.let { sendAction(TransformAction.NavigateToGenerating(it)) }
     }

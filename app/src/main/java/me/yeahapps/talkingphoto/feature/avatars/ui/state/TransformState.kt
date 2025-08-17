@@ -4,6 +4,7 @@ import android.net.Uri
 import me.yeahapps.talkingphoto.feature.avatars.domain.ImageStyle
 
 data class TransformState(
+    val hasSubscription: Boolean = false,
     val isLoading: Boolean = false,
     val canContinue: Boolean = false,
     val selectedStyle: ImageStyle? = null,

@@ -61,8 +61,8 @@ fun HumanAINavHost(
                 modifier = Modifier
                     .commonModifier()
                     .systemBarsPadding(),
-                navigateToGenerating = { navController.navigate(AddSoundScreen(it))}
-            )
+                navigateUp = { navController.navigateUp() },
+                navigateToGenerating = { navController.navigate(AddSoundScreen(it)) })
         }
 
         composable<CreatingVideoScreen> {

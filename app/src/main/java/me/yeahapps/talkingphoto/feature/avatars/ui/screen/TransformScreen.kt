@@ -20,7 +20,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,6 +40,7 @@ import me.yeahapps.talkingphoto.R
 import me.yeahapps.talkingphoto.core.ui.component.button.filled.HumanAIPrimaryButton
 import me.yeahapps.talkingphoto.core.ui.component.button.icons.HumanAIIconButton
 import me.yeahapps.talkingphoto.core.ui.component.topbar.HumanAISecondaryTopBar
+import me.yeahapps.talkingphoto.core.ui.navigation.commonModifier
 import me.yeahapps.talkingphoto.core.ui.theme.HumanAITheme
 import me.yeahapps.talkingphoto.core.ui.utils.collectFlowWithLifecycle
 import me.yeahapps.talkingphoto.core.ui.utils.toPainter
@@ -47,6 +50,7 @@ import me.yeahapps.talkingphoto.feature.avatars.ui.component.ImageStyleCard
 import me.yeahapps.talkingphoto.feature.avatars.ui.event.TransformEvent
 import me.yeahapps.talkingphoto.feature.avatars.ui.state.TransformState
 import me.yeahapps.talkingphoto.feature.avatars.ui.viewmodel.TransformViewModel
+import me.yeahapps.talkingphoto.feature.subscription.ui.screen.SubscriptionsContainer
 
 @Serializable
 class TransformScreen(val imageUri: String)
@@ -55,12 +59,14 @@ class TransformScreen(val imageUri: String)
 fun TransformContainer(
     modifier: Modifier = Modifier,
     viewModel: TransformViewModel = hiltViewModel(),
-    navigateToGenerating: (String) -> Unit
+    navigateUp: () -> Unit,
+    navigateToGenerating: (String) -> Unit,
 ) {
     val state by viewModel.viewState.collectAsStateWithLifecycle()
     viewModel.viewActions.collectFlowWithLifecycle { action ->
         when (action) {
             is TransformAction.NavigateToGenerating -> navigateToGenerating(action.avatarUri.toString())
+            is TransformAction.NavigateUp -> navigateUp()
             null -> {}
         }
     }
@@ -72,11 +78,14 @@ fun TransformContainer(
 private fun TransformContent(
     modifier: Modifier = Modifier, state: TransformState = TransformState(), onEvent: (TransformEvent) -> Unit = {}
 ) {
+    var isSubscriptionsScreenVisible by remember { mutableStateOf(false) }
     val context = LocalContext.current
     Scaffold(modifier = modifier, topBar = {
         HumanAISecondaryTopBar(
             title = stringResource(R.string.transform_headline),
-            navigationIcon = { HumanAIIconButton(icon = R.drawable.ic_arrow_back) },
+            navigationIcon = { HumanAIIconButton(icon = R.drawable.ic_arrow_back){
+                onEvent(TransformEvent.NavigateUp)
+            } },
             actions = {
                 state.avatarUrl?.let {
                     HumanAIIconButton(icon = R.drawable.ic_save) {
@@ -132,9 +141,10 @@ private fun TransformContent(
                 ) {
                     items(ImageStyle.entries) { style ->
                         ImageStyleCard(
-                            style = style,
-                            isSelected = style == state.selectedStyle,
-                            onClick = { onEvent(TransformEvent.OnStyleSelected(style)) })
+                            style = style, isSelected = style == state.selectedStyle, onClick = {
+                                if (state.hasSubscription) onEvent(TransformEvent.OnStyleSelected(style))
+                                else isSubscriptionsScreenVisible = true
+                            })
                     }
                 }
             }
@@ -157,5 +167,13 @@ private fun TransformContent(
         ) {
             CircularProgressIndicator()
         }
+    }
+
+    if (isSubscriptionsScreenVisible) {
+        SubscriptionsContainer(
+            modifier = Modifier
+                .commonModifier()
+                .fillMaxSize(),
+            onScreenClose = { isSubscriptionsScreenVisible = false })
     }
 }

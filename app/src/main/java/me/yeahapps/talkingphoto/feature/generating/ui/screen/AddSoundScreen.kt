@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -35,6 +34,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -61,6 +61,7 @@ import me.yeahapps.talkingphoto.R
 import me.yeahapps.talkingphoto.core.ui.component.button.filled.HumanAIPrimaryButton
 import me.yeahapps.talkingphoto.core.ui.component.button.icons.HumanAIIconButton
 import me.yeahapps.talkingphoto.core.ui.component.topbar.HumanAISecondaryTopBar
+import me.yeahapps.talkingphoto.core.ui.navigation.commonModifier
 import me.yeahapps.talkingphoto.core.ui.theme.HumanAITheme
 import me.yeahapps.talkingphoto.core.ui.utils.collectFlowWithLifecycle
 import me.yeahapps.talkingphoto.core.ui.utils.formatMillisecondsToMmSs
@@ -71,6 +72,7 @@ import me.yeahapps.talkingphoto.feature.generating.ui.component.SoundControlsIco
 import me.yeahapps.talkingphoto.feature.generating.ui.event.AddSoundEvent
 import me.yeahapps.talkingphoto.feature.generating.ui.state.AddSoundState
 import me.yeahapps.talkingphoto.feature.generating.ui.viewmodel.AddSoundViewModel
+import me.yeahapps.talkingphoto.feature.subscription.ui.screen.SubscriptionsContainer
 
 @Serializable
 data class AddSoundScreen(val imageUri: String)
@@ -133,6 +135,7 @@ private fun AddSoundContent(
     state: AddSoundState = AddSoundState(),
     onEvent: (AddSoundEvent) -> Unit = {}
 ) {
+    var isSubscriptionsScreenVisible by remember { mutableStateOf(false) }
     val insets = WindowInsets.ime
     val imeVisible = insets.getBottom(LocalDensity.current) > 0
 
@@ -157,8 +160,7 @@ private fun AddSoundContent(
     }
 
     Scaffold(
-        modifier = modifier,
-        topBar = {
+        modifier = modifier, topBar = {
             HumanAISecondaryTopBar(
                 title = stringResource(R.string.add_sound_title), navigationIcon = {
                     HumanAIIconButton(icon = R.drawable.ic_arrow_back, onClick = { onEvent(AddSoundEvent.NavigateUp) })
@@ -218,7 +220,10 @@ private fun AddSoundContent(
                     onMessageChange = { onEvent(AddSoundEvent.OnMessageChanged(it.take(400))) },
                     onClearMessage = { onEvent(AddSoundEvent.ClearMessageField) },
                     onVoiceSelect = { onEvent(AddSoundEvent.OnVoiceSelect(it)) },
-                    onDone = { onEvent(AddSoundEvent.StartGenerating) })
+                    onDone = {
+                        if (state.hasSubscription) onEvent(AddSoundEvent.StartGenerating)
+                        else isSubscriptionsScreenVisible = true
+                    })
             } else {
                 SoundRecordControls(
                     audioDuration = state.audioDuration,
@@ -230,9 +235,20 @@ private fun AddSoundContent(
                     onPause = { onEvent(AddSoundEvent.PauseSound) },
                     onRecord = { onEvent(AddSoundEvent.StartRecording) },
                     onStop = { onEvent(AddSoundEvent.StopRecording) },
-                    onDone = { onEvent(AddSoundEvent.StartGenerating) })
+                    onDone = {
+                        if (state.hasSubscription) onEvent(AddSoundEvent.StartGenerating)
+                        else isSubscriptionsScreenVisible = true
+                    })
             }
         }
+    }
+
+    if (isSubscriptionsScreenVisible) {
+        SubscriptionsContainer(
+            modifier = Modifier
+                .commonModifier()
+                .fillMaxSize(),
+            onScreenClose = { isSubscriptionsScreenVisible = false })
     }
 }
 
