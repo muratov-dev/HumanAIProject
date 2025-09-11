@@ -10,22 +10,22 @@ plugins {
 }
 
 android {
-    namespace = "me.yeahapps.talkingphoto"
+    namespace = "me.yeahapps.liveface"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "me.yeahapps.talkingphoto"
+        applicationId = "me.yeahapps.liveface"
         minSdk = 29
         targetSdk = 36
-        val majorVersion = 0
-        val minorVersion = 2
+        val majorVersion = 1
+        val minorVersion = 0
         val patchVersion = 0
 
         versionCode = majorVersion * 10000 + minorVersion * 100 + patchVersion
         versionName = "${majorVersion}.${minorVersion}.${patchVersion}"
-        base.archivesName = "HumanAI-$versionName"
+        base.archivesName = "LiveFace-$versionName"
 
-        testInstrumentationRunner = "androidx.me.yeahapps.talkingphoto.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.me.yeahapps.liveface.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {

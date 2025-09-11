@@ -1,0 +1,146 @@
+package me.yeahapps.liveface.feature.generating.data.repository
+
+import android.content.Context
+import android.content.SharedPreferences
+import android.net.Uri
+import androidx.core.net.toUri
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
+import me.yeahapps.liveface.core.data.network.api.MainApiService
+import me.yeahapps.liveface.core.data.network.api.TextToSpeechApiService
+import me.yeahapps.liveface.core.data.network.model.TextToSpeechRequestDto
+import me.yeahapps.liveface.core.data.network.model.animate_image.request.AnimateImageRequestDto
+import me.yeahapps.liveface.core.data.network.model.animate_image.request.PhotoInfo
+import me.yeahapps.liveface.core.data.network.model.animate_image.request.PtInfo
+import me.yeahapps.liveface.core.data.network.model.get_video.request.GetVideoRequestDto
+import me.yeahapps.liveface.core.data.network.utils.asRequestBody
+import me.yeahapps.liveface.feature.generating.domain.repository.GeneratingRepository
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import timber.log.Timber
+import java.io.File
+import java.io.FileOutputStream
+import java.net.URL
+import javax.inject.Inject
+
+class GeneratingRepositoryImpl @Inject constructor(
+    @param:ApplicationContext private val context: Context,
+    private val mainApiService: MainApiService,
+    private val textToSpeechApiService: TextToSpeechApiService,
+    private val sharedPreferences: SharedPreferences,
+) : GeneratingRepository {
+
+    private val contentResolver = context.contentResolver
+
+    override suspend fun uploadImage(filePath: Uri): String? {
+        val mediaType = contentResolver.getType(filePath)
+        val fileRequestBody = filePath.asRequestBody(contentResolver, mediaType?.toMediaType())
+        val multipartBody = MultipartBody.Part.createFormData("file", "animal.jpg", fileRequestBody)
+        return uploadFile(multipartBody)
+    }
+
+    override suspend fun uploadAudio(filePath: Uri): String? {
+        val mediaType = contentResolver.getType(filePath)
+        val fileRequestBody = filePath.asRequestBody(contentResolver, mediaType?.toMediaType())
+        val multipartBody = MultipartBody.Part.createFormData("file", "audio.m4a", fileRequestBody)
+        return uploadFile(multipartBody)
+    }
+
+    override suspend fun generateAudio(text: String, voiceId: String): String? {
+        val url = "https://api.elevenlabs.io/v1/text-to-speech/$voiceId"
+        val requestBody = TextToSpeechRequestDto(text = text)
+        val response = textToSpeechApiService.textToSpeech(url, requestBody)
+        if (response.isSuccessful) {
+            val inputStream = response.body()?.byteStream()
+            val file = File(context.cacheDir, "voice.mp3")
+            file.outputStream().use { inputStream?.copyTo(it) }
+
+            return file.toUri().toString()
+        } else {
+            Timber.e(response.errorBody()?.string())
+        }
+        return null
+    }
+
+    private suspend fun uploadFile(multipartBody: MultipartBody.Part): String? {
+        val userId = sharedPreferences.getString("userId", null)
+            ?: throw IllegalStateException("User ID not found in SharedPreferences")
+        try {
+            val fileData = mainApiService.uploadFile(file = multipartBody, userId = userId)
+            return fileData.body()?.fileData?.filePath
+        } catch (ex: Exception) {
+            Timber.e(ex)
+        }
+        return null
+    }
+
+    override suspend fun animateImage(imageUrl: String, audioUrl: String): String? {
+        val userId = sharedPreferences.getString("userId", null)
+            ?: throw IllegalStateException("User ID not found in SharedPreferences")
+        try {
+            val request = mainApiService.animateImage(
+                requestData = AnimateImageRequestDto(
+                    ptInfos = listOf(PtInfo(audioUrl)),
+                    photoInfoList = listOf(PhotoInfo(photoPath = imageUrl)),
+                    userId = userId
+                )
+            )
+            return request.body()?.animateImageData?.animateImageId
+        } catch (ex: Exception) {
+            Timber.e(ex, "Error animating image")
+        }
+        return null
+    }
+
+    override suspend fun getVideoUrl(token: String): String? {
+        val userId = sharedPreferences.getString("userId", null)
+            ?: throw IllegalStateException("User ID not found in SharedPreferences")
+        try {
+            val response = mainApiService.getVideo(GetVideoRequestDto(animateIdList = listOf(token), userId = userId))
+            if (response.body()?.videoData?.videoData?.firstOrNull()?.state == "queue") {
+                delay(5000)
+                while (true) {
+                    val pollResponse =
+                        mainApiService.getVideo(GetVideoRequestDto(animateIdList = listOf(token), userId = userId))
+                    if (pollResponse.body()?.videoData?.videoData?.firstOrNull()?.state != "queue") {
+                        val videoUrl = pollResponse.body()?.videoData?.videoData?.firstOrNull()?.url
+                        val file = saveVideoSilently(videoUrl ?: return null, "$token.mp4")
+                        return file?.absolutePath
+                    }
+                    delay(5_000)
+                }
+            } else {
+                val videoUrl = response.body()?.videoData?.videoData?.firstOrNull()?.url
+                val file = saveVideoSilently(videoUrl ?: return null, "$token.mp4")
+                return file?.absolutePath
+            }
+        } catch (ex: Exception) {
+            Timber.e(ex, "Error fetching video URL")
+        }
+        return null
+    }
+
+    private suspend fun saveVideoSilently(videoUrl: String, fileName: String): File? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val url = URL(videoUrl)
+                val connection = url.openConnection()
+                connection.connect()
+
+                val inputStream = connection.getInputStream()
+                val file = File(context.filesDir, fileName) // внутреннее хранилище
+
+                FileOutputStream(file).use { output ->
+                    inputStream.copyTo(output)
+                }
+
+                file
+            } catch (e: Exception) {
+                Timber.e(e)
+                null
+            }
+        }
+    }
+}

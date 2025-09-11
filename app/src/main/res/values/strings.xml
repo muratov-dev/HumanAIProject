@@ -1,6 +1,6 @@
 <resources>
     <!--  Common  -->
-    <string name="app_name">Dream Face AI</string>
+    <string name="app_name">Live Face AI</string>
     <string name="common_done">Done</string>
     <string name="common_next">Next</string>
     <string name="common_try">Try It Now!</string>
@@ -44,7 +44,7 @@
     <string name="transform_headline">Transform</string>
     <string name="transform_create">Create Video</string>
     <string name="transform_select_style">Select a style</string>
-    <!--  My Videos -->
+    <!--  My Videos -->0
     <string name="videos_label">My Videos</string>
     <string name="videos_headline">📹 My Videos</string>
     <string name="videos_empty_label">No Videos</string>

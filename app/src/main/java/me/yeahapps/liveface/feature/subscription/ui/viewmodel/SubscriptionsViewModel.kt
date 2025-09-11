@@ -1,0 +1,55 @@
+package me.yeahapps.liveface.feature.subscription.ui.viewmodel
+
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collectLatest
+import me.yeahapps.liveface.core.data.BillingManager
+import me.yeahapps.liveface.core.ui.viewmodel.BaseViewModel
+import me.yeahapps.liveface.feature.subscription.ui.action.SubscriptionsAction
+import me.yeahapps.liveface.feature.subscription.ui.event.SubscriptionsEvent
+import me.yeahapps.liveface.feature.subscription.ui.screen.getWeeks
+import me.yeahapps.liveface.feature.subscription.ui.state.SubscriptionsState
+import javax.inject.Inject
+
+@HiltViewModel
+class SubscriptionsViewModel @Inject constructor(
+    private val billingManager: BillingManager
+) : BaseViewModel<SubscriptionsState, SubscriptionsEvent, SubscriptionsAction>(SubscriptionsState()) {
+
+    override fun obtainEvent(viewEvent: SubscriptionsEvent) {
+        when (viewEvent) {
+            is SubscriptionsEvent.LaunchPurchaseFlow -> {
+                billingManager.launchPurchaseFlow(viewEvent.activity, viewEvent.details)
+            }
+
+            is SubscriptionsEvent.SelectSubscription -> updateViewState { copy(selectedDetails = viewEvent.details) }
+            SubscriptionsEvent.CloseScreen -> sendAction(SubscriptionsAction.CloseScreen)
+            SubscriptionsEvent.ActivateRelativesSubscription -> {
+                billingManager.activateRelativesSubscription()
+                sendAction(SubscriptionsAction.RelativeSubscriptionActivated)
+            }
+        }
+    }
+
+    init {
+        viewModelScoped {
+            billingManager.availableSubscriptions.collectLatest { subscriptions ->
+                subscriptions.forEach { product ->
+                    val offer = product.subscriptionOfferDetails?.firstOrNull()
+                    val pricingPhases = offer?.pricingPhases?.pricingPhaseList
+                    pricingPhases?.let {
+                        val hasTrial = pricingPhases.size > 1 && pricingPhases.first().priceAmountMicros == 0L
+                        if (hasTrial) updateViewState { copy(selectedDetails = product) }
+                    } ?: if (getWeeks(product) > 1) {
+                        updateViewState { copy(selectedDetails = product) }
+                    } else return@forEach
+                }
+                updateViewState { copy(subscriptionsList = subscriptions) }
+            }
+        }
+        viewModelScoped {
+            billingManager.isSubscribed.collectLatest {
+                if (it) sendAction(SubscriptionsAction.CloseScreen)
+            }
+        }
+    }
+}
