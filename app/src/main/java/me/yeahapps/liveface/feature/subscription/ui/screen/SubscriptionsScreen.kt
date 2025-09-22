@@ -172,9 +172,9 @@ private fun SubscriptionsContent(
             }
             Spacer(Modifier.size(12.dp))
             Text(
-                text = "Non commitment - cancel anytime",
+                text = "The trial automatically renews into a paid subscription\nand will continue to automatically renew.\nCancel anytime.",
                 textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
                 color = HumanAITheme.colors.textPrimary.copy(alpha = 0.5f),
                 style = HumanAITheme.typography.bodyRegular
             )

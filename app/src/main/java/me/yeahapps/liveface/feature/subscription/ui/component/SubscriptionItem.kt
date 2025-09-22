@@ -61,19 +61,21 @@ fun SubscriptionItem(
             )
         }
 
-        Column(horizontalAlignment = Alignment.End) {
-            Text(
-                text = weeklyPrice,
-                textAlign = TextAlign.End,
-                color = Color.White,
-                style = HumanAITheme.typography.bodyRegular
-            )
-            Text(
-                text = "per week",
-                textAlign = TextAlign.End,
-                color = Color.White.copy(alpha = 0.5f),
-                style = HumanAITheme.typography.labelMedium
-            )
+        if (weeklyPrice != "0.0") {
+            Column(horizontalAlignment = Alignment.End) {
+                Text(
+                    text = weeklyPrice,
+                    textAlign = TextAlign.End,
+                    color = Color.White,
+                    style = HumanAITheme.typography.bodyRegular
+                )
+                Text(
+                    text = "per week",
+                    textAlign = TextAlign.End,
+                    color = Color.White.copy(alpha = 0.5f),
+                    style = HumanAITheme.typography.labelMedium
+                )
+            }
         }
     }
 }

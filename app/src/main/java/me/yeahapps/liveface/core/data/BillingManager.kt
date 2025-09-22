@@ -79,8 +79,8 @@ class BillingManager @Inject constructor(
      */
     private fun queryAvailableSubscriptions() {
         val productList = listOf(
-            createProductDetailsParams("me.yeahapps.talkingphoto.weekly"),
-            createProductDetailsParams("me.yeahapps.talkingphoto.yearly")
+            createProductDetailsParams("me.yeahapps.liveface.weekly"),
+            createProductDetailsParams("me.yeahapps.liveface.yearly")
         )
         val params = QueryProductDetailsParams.newBuilder().setProductList(productList).build()
 
